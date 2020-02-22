@@ -5,7 +5,7 @@ use crate::handlers::greeting;
 pub fn greet() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     warp::path::path("greeting")
         .and(warp::get())
-        .and(warp::path::path("hello"))
+        .and(warp::path("hello"))
         .and(hi().or(hi_you()))
 }
 
