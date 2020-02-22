@@ -20,7 +20,7 @@ async fn hello_world() {
         .reply(&api)
         .await;
 
-    asserting("status code is OK")
+    asserting("returns OK status code")
         .that(&resp.status())
         .is_equal_to(StatusCode::OK);
 

@@ -4,6 +4,7 @@ use crate::config::version::ApiVersion;
 
 pub mod greeting;
 pub mod quiz;
+pub mod validate;
 
 pub fn app_filters(
     api_version: ApiVersion,
