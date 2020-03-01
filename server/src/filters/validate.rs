@@ -6,10 +6,11 @@ use warp::{reject, Filter, Rejection, Reply};
 
 use crate::config::version::ApiVersion;
 
-pub fn api_version() -> impl Filter<Extract = (ApiVersion,), Error = Rejection> + Copy {
+pub fn api_version(
+    api_version: ApiVersion,
+) -> impl Filter<Extract = (ApiVersion,), Error = Rejection> + Copy {
     warp::header::<String>("Accept")
         .and_then(|_h: String| async move { Err(reject::custom(InvalidApiVersionHeader)) })
-        .recover(handle_rejection)
 }
 
 impl warp::reply::Reply for ApiVersion {
