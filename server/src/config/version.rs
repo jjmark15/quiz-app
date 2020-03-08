@@ -1,7 +1,13 @@
-pub(crate) struct ApiVersion;
+pub struct ApiVersion;
 
 impl ApiVersion {
-    pub(crate) fn version_string() -> &'static str {
+    #[cfg(not(test))]
+    pub fn version_string() -> &'static str {
         "v0"
+    }
+
+    #[cfg(test)]
+    pub fn version_string() -> &'static str {
+        "vlatest"
     }
 }

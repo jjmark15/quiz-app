@@ -8,3 +8,7 @@ pub fn get_request_endpoint_string(partial_endpoint: &str) -> String {
     };
     vec!["/api".to_string(), trimmed_partial.to_string()].join("/")
 }
+
+pub fn get_request_default_mime_prefix() -> &'static str {
+    "application/vnd.warpj.vlatest"
+}

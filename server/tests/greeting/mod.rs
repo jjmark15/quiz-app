@@ -7,7 +7,7 @@ use warp::test::request;
 
 use server::filters::app_filters;
 
-use crate::common::get_request_endpoint_string;
+use crate::common::{get_request_default_mime_prefix, get_request_endpoint_string};
 
 #[tokio::test]
 async fn hello_world() {
@@ -38,7 +38,10 @@ async fn hello_person() {
     let resp = request()
         .method(Method::GET.as_str())
         .path(get_request_endpoint_string("/greeting/hello/Joshua").as_ref())
-        .header("accept", "application/vnd.warpj.v0+text")
+        .header(
+            "accept",
+            format!("{}+text", get_request_default_mime_prefix()),
+        )
         .reply(&api)
         .await;
 
