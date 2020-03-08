@@ -10,5 +10,5 @@ pub fn get_request_endpoint_string(partial_endpoint: &str) -> String {
 }
 
 pub fn get_request_default_mime_prefix() -> &'static str {
-    "application/vnd.warpj.vlatest"
+    "application/vnd.warpj.v0"
 }

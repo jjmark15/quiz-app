@@ -16,7 +16,10 @@ async fn hello_world() {
     let resp = request()
         .method(Method::GET.as_str())
         .path(get_request_endpoint_string("/greeting/hello").as_ref())
-        .header("accept", "application/vnd.warpj.v0+text")
+        .header(
+            "accept",
+            format!("{}+text", get_request_default_mime_prefix()),
+        )
         .reply(&api)
         .await;
 
