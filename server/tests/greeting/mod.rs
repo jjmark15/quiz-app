@@ -5,18 +5,18 @@ use warp::http::method::Method;
 use warp::http::StatusCode;
 use warp::test::request;
 
-use server::config::version::ApiVersion;
 use server::filters::app_filters;
 
 use crate::common::get_request_endpoint_string;
 
 #[tokio::test]
 async fn hello_world() {
-    let api = app_filters(ApiVersion::latest());
+    let api = app_filters();
 
     let resp = request()
         .method(Method::GET.as_str())
         .path(get_request_endpoint_string("/greeting/hello").as_ref())
+        .header("accept", "application/vnd.warpj.v0+text")
         .reply(&api)
         .await;
 
@@ -33,11 +33,12 @@ async fn hello_world() {
 
 #[tokio::test]
 async fn hello_person() {
-    let api = app_filters(ApiVersion::latest());
+    let api = app_filters();
 
     let resp = request()
         .method(Method::GET.as_str())
         .path(get_request_endpoint_string("/greeting/hello/Joshua").as_ref())
+        .header("accept", "application/vnd.warpj.v0+text")
         .reply(&api)
         .await;
 
