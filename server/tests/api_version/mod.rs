@@ -40,7 +40,7 @@ async fn accept_header_uses_invalid_api_version() {
         .reply(&api)
         .await;
 
-    asserting("returns OK status code")
+    asserting("returns NOT_ACCEPTABLE status code")
         .that(&resp.status())
         .is_equal_to(StatusCode::NOT_ACCEPTABLE);
 }

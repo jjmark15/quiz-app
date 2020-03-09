@@ -98,12 +98,11 @@ fn extract_api_version_from_accept_header(
 
 #[cfg(test)]
 pub mod tests {
-    use spectral::*;
+    use spectral::prelude::*;
 
     use crate::config::version::ApiVersion;
-    use crate::filters::validate::{
-        extract_api_version_from_accept_header, ApiValidationError, ApiValidationErrorKind,
-    };
+
+    use super::*;
 
     #[test]
     fn extracts_successfully_with_valid_version() {
