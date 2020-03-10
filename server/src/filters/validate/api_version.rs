@@ -1,11 +1,13 @@
+use std::convert::Infallible;
 use std::error::Error;
 use std::fmt;
+use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
 
 use regex::Regex;
-use serde::export::fmt::Display;
-use serde::export::Formatter;
-use warp::{Filter, Rejection};
+use serde::Serialize;
+use warp::reject::Reject;
+use warp::{Filter, Rejection, Reply};
 
 use crate::config::version::ApiVersion;
 
@@ -17,16 +19,18 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
                     if api_version == ApiVersion::latest() {
                         Ok(())
                     } else {
-                        Err(warp::reject::not_found())
+                        Err(warp::reject::custom(ApiValidationError::new(
+                            ApiValidationErrorKind::WrongApiVersion,
+                        )))
                     }
                 }
-                Err(_e) => Err(warp::reject::not_found()),
+                Err(e) => Err(warp::reject::custom(e)),
             }
         })
         .untuple_one()
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 struct ApiValidationError {
     kind: ApiValidationErrorKind,
     cause: Option<String>,
@@ -37,6 +41,8 @@ impl ApiValidationError {
         let kind_description = match self.kind {
             ApiValidationErrorKind::MissingMatch => "could not find a version in accept header",
             ApiValidationErrorKind::UnableToParse => "version in accept header could not be parsed",
+            ApiValidationErrorKind::WrongApiVersion => "api version is incorrect",
+            ApiValidationErrorKind::Unknown => "unknown error",
         };
 
         match &self.cause {
@@ -50,11 +56,13 @@ impl ApiValidationError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Copy, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
 enum ApiValidationErrorKind {
     MissingMatch,
     UnableToParse,
+    WrongApiVersion,
+    Unknown,
 }
 
 impl From<ParseIntError> for ApiValidationError {
@@ -66,12 +74,42 @@ impl From<ParseIntError> for ApiValidationError {
     }
 }
 
+impl From<&ApiValidationError> for ApiValidationError {
+    fn from(original: &ApiValidationError) -> Self {
+        ApiValidationError {
+            kind: original.kind,
+            cause: original.cause.clone(),
+        }
+    }
+}
+
 impl Error for ApiValidationError {}
 
 impl Display for ApiValidationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         self.description().fmt(f)
     }
+}
+
+impl Reject for ApiValidationError {}
+
+pub fn handle_api_validation_error(r: Rejection) -> Result<impl Reply, Infallible> {
+    let code;
+    let err: ApiValidationError;
+
+    match r.find::<ApiValidationError>() {
+        Some(e) => {
+            code = warp::http::StatusCode::NOT_ACCEPTABLE;
+            err = e.into();
+        }
+        None => {
+            log::error!("unhandled server error");
+            code = warp::http::StatusCode::INTERNAL_SERVER_ERROR;
+            err = ApiValidationError::new(ApiValidationErrorKind::Unknown);
+        }
+    }
+
+    Ok(warp::reply::with_status(warp::reply::json(&err), code))
 }
 
 fn extract_api_version_from_accept_header(
