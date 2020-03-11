@@ -14,7 +14,7 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
         .and_then(|accept_string: String| async move {
             match extract_api_version_from_accept_header(accept_string.as_str()) {
                 Ok(api_version) => {
-                    if api_version == ApiVersion::latest() {
+                    if api_version.version() == ApiVersion::latest().version() {
                         Ok(())
                     } else {
                         Err(warp::reject::custom(ApiValidationError::new(
@@ -94,7 +94,7 @@ impl Reject for ApiValidationError {}
 fn extract_api_version_from_accept_header(
     accept_header: &str,
 ) -> Result<ApiVersion, ApiValidationError> {
-    let re: Regex = Regex::new(r"(?i)application/vnd\.warpj\.v(\d)+\+?\w*").unwrap();
+    let re: Regex = Regex::new(r"(?i)application/vnd\.warpj\.v(\d+)\+?\w*").unwrap();
     let result = re.captures(accept_header);
 
     match result {
@@ -130,6 +130,17 @@ pub mod tests {
         asserting("successfully extracts a valid version")
             .that(&result.is_ok())
             .is_equal_to(true)
+    }
+
+    #[test]
+    fn extracts_successfully_with_multi_digit_number() {
+        let header = "application/vnd.warpj.v12+text";
+        let result: Result<ApiVersion, ApiValidationError> =
+            extract_api_version_from_accept_header(header);
+
+        asserting("successfully extracts a multi digit number")
+            .that(&result.unwrap().version())
+            .is_equal_to(12)
     }
 
     #[test]
