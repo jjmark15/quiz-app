@@ -31,7 +31,7 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
         .recover(handle_api_validation_error)
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 struct ApiValidationError {
     kind: ApiValidationErrorKind,
     cause: Option<String>,
@@ -57,7 +57,7 @@ impl ApiValidationError {
     }
 }
 
-#[derive(Debug, Serialize, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
 enum ApiValidationErrorKind {
     MissingMatch,
@@ -94,23 +94,32 @@ impl Display for ApiValidationError {
 
 impl Reject for ApiValidationError {}
 
-async fn handle_api_validation_error(r: Rejection) -> Result<impl Reply, Infallible> {
-    let code;
-    let err: ApiValidationError;
+#[derive(Serialize)]
+struct ErrorMessage {
+    code: u16,
+    message: String,
+}
+
+pub async fn handle_api_validation_error(r: Rejection) -> Result<impl Reply, Infallible> {
+    let code: warp::http::StatusCode;
+    let message: String;
 
     match r.find::<ApiValidationError>() {
         Some(e) => {
             code = warp::http::StatusCode::NOT_ACCEPTABLE;
-            err = e.into();
+            message = e.description();
         }
         None => {
             log::error!("unhandled server error");
             code = warp::http::StatusCode::INTERNAL_SERVER_ERROR;
-            err = ApiValidationError::new(ApiValidationErrorKind::Unknown);
+            message = ApiValidationError::new(ApiValidationErrorKind::Unknown).description();
         }
     }
-
-    Ok(warp::reply::with_status(warp::reply::json(&err), code))
+    let json = warp::reply::json(&ErrorMessage {
+        code: code.as_u16(),
+        message,
+    });
+    Ok(warp::reply::with_status(json, code))
 }
 
 fn extract_api_version_from_accept_header(
