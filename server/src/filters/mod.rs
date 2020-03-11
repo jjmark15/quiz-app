@@ -1,13 +1,16 @@
+use std::convert::Infallible;
+
 use warp::Filter;
 
-use crate::config::version::ApiVersion;
+use crate::rejection::handle_api_validation_error;
 
 pub mod greeting;
 pub mod quiz;
+pub mod validate;
 
-pub fn app_filters(
-    api_version: ApiVersion,
-) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    let api_prefix = warp::path("api").and(warp::path(api_version.version_string().to_string()));
-    api_prefix.and(greeting::greet().or(quiz::quiz()))
+pub fn app_filters() -> impl Filter<Extract = impl warp::Reply, Error = Infallible> + Clone {
+    warp::path("api")
+        .and(validate::api_version::validate_api_version())
+        .and(greeting::greet().or(quiz::quiz()))
+        .recover(handle_api_validation_error)
 }
