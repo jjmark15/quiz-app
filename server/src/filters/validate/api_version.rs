@@ -28,6 +28,7 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
             }
         })
         .untuple_one()
+        .recover(handle_api_validation_error)
 }
 
 #[derive(Debug, Serialize)]
@@ -93,7 +94,7 @@ impl Display for ApiValidationError {
 
 impl Reject for ApiValidationError {}
 
-pub fn handle_api_validation_error(r: Rejection) -> Result<impl Reply, Infallible> {
+async fn handle_api_validation_error(r: Rejection) -> Result<impl Reply, Infallible> {
     let code;
     let err: ApiValidationError;
 
