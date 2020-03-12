@@ -10,7 +10,11 @@ pub mod validate;
 
 pub fn app_filters() -> impl Filter<Extract = impl warp::Reply, Error = Infallible> + Clone {
     warp::path("api")
-        .and(validate::api_version::validate_api_version())
+        .and(
+            validate::api_version::validate_api_version()
+                .or(warp::header::exact("accept", "*/*"))
+                .unify(),
+        )
         .and(greeting::greet().or(quiz::quiz()))
         .recover(handle_api_validation_error)
 }

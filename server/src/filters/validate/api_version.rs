@@ -10,19 +10,23 @@ use warp::{Filter, Rejection};
 use crate::config::version::ApiVersion;
 
 pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
-    warp::header::header("accept")
-        .and_then(|accept_string: String| async move {
-            match extract_api_version_from_accept_header(accept_string.as_str()) {
-                Ok(api_version) => {
-                    if api_version.version() == ApiVersion::latest().version() {
-                        Ok(())
-                    } else {
-                        Err(warp::reject::custom(ApiValidationError::new(
-                            ApiValidationErrorKind::WrongApiVersion,
-                        )))
+    warp::header::optional::<String>("accept")
+        .and_then(|optional_accept_string: Option<String>| async move {
+            if let Some(accept_string) = optional_accept_string {
+                match extract_api_version_from_accept_header(accept_string.as_str()) {
+                    Ok(api_version) => {
+                        if api_version.version() == ApiVersion::latest().version() {
+                            Ok(())
+                        } else {
+                            Err(warp::reject::custom(ApiValidationError::new(
+                                ApiValidationErrorKind::WrongApiVersion,
+                            )))
+                        }
                     }
+                    Err(e) => Err(warp::reject::custom(e)),
                 }
-                Err(e) => Err(warp::reject::custom(e)),
+            } else {
+                Ok(())
             }
         })
         .untuple_one()
