@@ -71,7 +71,7 @@ impl From<ParseIntError> for ApiValidationError {
     fn from(p: ParseIntError) -> Self {
         ApiValidationError {
             kind: ApiValidationErrorKind::UnableToParse,
-            cause: Some(p.description().to_string()),
+            cause: Some(p.to_string()),
         }
     }
 }
