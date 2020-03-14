@@ -10,6 +10,7 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
     warp::header::optional::<String>("accept")
         .and_then(|optional_accept_string: Option<String>| async move {
             if let Some(accept_string) = optional_accept_string {
+                debug!("accept header is present");
                 match extract_api_version_from_accept_header(accept_string.as_str()) {
                     Ok(api_version) => {
                         if api_version.version() == ApiVersion::latest().version() {
@@ -27,6 +28,7 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
                     }
                 }
             } else {
+                debug!("accept header is NOT present");
                 Ok(())
             }
         })
