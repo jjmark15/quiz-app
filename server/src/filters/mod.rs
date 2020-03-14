@@ -12,7 +12,7 @@ pub fn app_filters() -> impl Filter<Extract = impl warp::Reply, Error = Infallib
     warp::path("api")
         .and(
             warp::header::exact("accept", "*/*")
-                .or(validate::api_version::validate_api_version())
+                .or(validate::api_version::valid_api_version())
                 .unify(),
         )
         .and(greeting::greet().or(quiz::quiz()))

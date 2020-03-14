@@ -6,40 +6,46 @@ use crate::config::version::ApiVersion;
 use crate::error::api_validation_error::{ApiValidationError, ApiValidationErrorKind};
 use crate::logging;
 
-pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
+pub fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")
-        .and_then(|optional_accept_string: Option<String>| async move {
-            if let Some(accept_string) = optional_accept_string {
-                debug!("accept header is present");
-                match extract_api_version_from_accept_header(accept_string.as_str()) {
-                    Ok(api_version) => {
-                        if api_version.is_latest() {
-                            Ok(())
-                        } else {
-                            let err =
-                                ApiValidationError::new(ApiValidationErrorKind::WrongApiVersion);
-                            debug!("{}", logging::log_string(&err));
-                            Err(warp::reject::custom(err))
-                        }
-                    }
-                    Err(err) => {
-                        debug!("{}", logging::log_string(&err));
-                        Err(warp::reject::custom(err))
-                    }
-                }
-            } else {
-                debug!("accept header is NOT present");
-                Ok(())
-            }
-        })
+        .and_then(validate_api_version)
         .untuple_one()
 }
 
-fn extract_api_version_from_accept_header(
-    accept_header: &str,
+async fn validate_api_version(optional_accept_string: Option<String>) -> Result<(), Rejection> {
+    if let Some(accept_string) = optional_accept_string {
+        debug!("accept header is present");
+        match extract_api_version_from_accept_header(accept_string) {
+            Ok(api_version) => {
+                if !api_version.is_latest() {
+                    return handle_old_api_version();
+                }
+                Ok(())
+            }
+            Err(err) => handle_failed_api_version_extraction(err),
+        }
+    } else {
+        debug!("accept header is NOT present");
+        Ok(())
+    }
+}
+
+fn handle_old_api_version() -> Result<(), Rejection> {
+    let err = ApiValidationError::new(ApiValidationErrorKind::WrongApiVersion);
+    debug!("{}", logging::log_string(&err));
+    Err(warp::reject::custom(err))
+}
+
+fn handle_failed_api_version_extraction(err: ApiValidationError) -> Result<(), Rejection> {
+    debug!("{}", logging::log_string(&err));
+    Err(warp::reject::custom(err))
+}
+
+fn extract_api_version_from_accept_header<T: AsRef<str>>(
+    accept_header: T,
 ) -> Result<ApiVersion, ApiValidationError> {
     let re: Regex = Regex::new(r"(?i)application/vnd\.warpj\.v(\d+)\+?\w*").unwrap();
-    let result = re.captures(accept_header);
+    let result = re.captures(accept_header.as_ref());
 
     match result {
         Some(captures) => match captures.get(1) {
