@@ -13,7 +13,7 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
                 debug!("accept header is present");
                 match extract_api_version_from_accept_header(accept_string.as_str()) {
                     Ok(api_version) => {
-                        if api_version.version() == ApiVersion::latest().version() {
+                        if api_version.is_latest() {
                             Ok(())
                         } else {
                             let err =

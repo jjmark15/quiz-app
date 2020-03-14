@@ -1,11 +1,13 @@
-#[derive(Eq, PartialEq, Debug)]
+const API_VERSION_LATEST: ApiVersion = ApiVersion { version: 0 };
+
+#[derive(Eq, PartialEq, Debug, Default)]
 pub struct ApiVersion {
     version: u16,
 }
 
 impl ApiVersion {
-    pub fn latest() -> ApiVersion {
-        ApiVersion { version: 0 }
+    pub fn latest() -> &'static ApiVersion {
+        &API_VERSION_LATEST
     }
 
     pub fn version(&self) -> u16 {
@@ -19,11 +21,9 @@ impl ApiVersion {
     pub fn new(version: u16) -> ApiVersion {
         ApiVersion { version }
     }
-}
 
-impl Default for ApiVersion {
-    fn default() -> Self {
-        ApiVersion::latest()
+    pub fn is_latest(&self) -> bool {
+        self.eq(ApiVersion::latest())
     }
 }
 
