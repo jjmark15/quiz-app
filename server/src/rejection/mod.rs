@@ -6,7 +6,7 @@ use warp::http::StatusCode;
 use warp::reply::Json;
 use warp::Rejection;
 
-use crate::filters::validate::api_version::ApiValidationError;
+use crate::error::api_validation_error::ApiValidationError;
 use crate::logging::{log_string, LogEntry, LogEntryKVP};
 
 pub async fn handle_api_validation_error(

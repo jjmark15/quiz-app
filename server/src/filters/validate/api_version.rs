@@ -1,14 +1,9 @@
-use std::error::Error;
-use std::fmt;
-use std::fmt::{Display, Formatter};
-use std::num::ParseIntError;
-
 use log::debug;
 use regex::Regex;
-use warp::reject::Reject;
 use warp::{Filter, Rejection};
 
 use crate::config::version::ApiVersion;
+use crate::error::api_validation_error::{ApiValidationError, ApiValidationErrorKind};
 use crate::logging;
 
 pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
@@ -36,83 +31,6 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
             }
         })
         .untuple_one()
-}
-
-#[derive(Debug)]
-pub struct ApiValidationError {
-    kind: ApiValidationErrorKind,
-    cause: Option<String>,
-}
-
-impl ApiValidationError {
-    pub fn description(&self) -> String {
-        let kind_description = match self.kind {
-            ApiValidationErrorKind::MissingMatch => {
-                "could not find an api version in accept header"
-            }
-            ApiValidationErrorKind::UnableToParse => {
-                "api version in accept header could not be parsed"
-            }
-            ApiValidationErrorKind::WrongApiVersion => "api version is incorrect",
-            ApiValidationErrorKind::Unknown => "unknown error",
-        };
-
-        match &self.cause {
-            Some(s) => format!("{} : {}", kind_description, s),
-            None => kind_description.to_string(),
-        }
-    }
-
-    pub fn new(kind: ApiValidationErrorKind) -> ApiValidationError {
-        ApiValidationError { kind, cause: None }
-    }
-}
-
-#[derive(Debug, Copy, Clone)]
-#[cfg_attr(test, derive(Eq, PartialEq))]
-pub enum ApiValidationErrorKind {
-    MissingMatch,
-    UnableToParse,
-    WrongApiVersion,
-    Unknown,
-}
-
-impl From<ParseIntError> for ApiValidationError {
-    fn from(p: ParseIntError) -> Self {
-        ApiValidationError {
-            kind: ApiValidationErrorKind::UnableToParse,
-            cause: Some(p.to_string()),
-        }
-    }
-}
-
-impl From<&ApiValidationError> for ApiValidationError {
-    fn from(original: &ApiValidationError) -> Self {
-        ApiValidationError {
-            kind: original.kind,
-            cause: original.cause.clone(),
-        }
-    }
-}
-
-impl Error for ApiValidationError {}
-
-impl Display for ApiValidationError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        self.description().fmt(f)
-    }
-}
-
-impl Reject for ApiValidationError {}
-
-impl logging::LogEntry for ApiValidationError {
-    fn log_entry_kvps(&self) -> Vec<logging::LogEntryKVP> {
-        vec![
-            logging::LogEntryKVP::new("type", "error"),
-            logging::LogEntryKVP::new("kind", format!("ApiValidationError::{:?}", self.kind)),
-            logging::LogEntryKVP::new("message", self.description()),
-        ]
-    }
 }
 
 fn extract_api_version_from_accept_header(
@@ -180,7 +98,7 @@ pub mod tests {
         let e = result.unwrap_err();
 
         asserting("regex parser could not match a version number")
-            .that(&e.kind)
+            .that(&e.kind())
             .is_equal_to(ApiValidationErrorKind::MissingMatch);
     }
 }
