@@ -7,6 +7,7 @@ use warp::reply::Json;
 use warp::Rejection;
 
 use crate::error::api_validation_error::ApiValidationError;
+use crate::error::Error;
 use crate::logging::{log_string, LogEntry, LogEntryKVP};
 
 pub async fn handle_api_validation_error(
@@ -20,7 +21,7 @@ pub async fn handle_api_validation_error(
         error_message = ErrorMessage::new(code.as_u16(), "NOT_FOUND".to_string());
     } else if let Some(err) = rej.find::<ApiValidationError>() {
         code = StatusCode::NOT_ACCEPTABLE;
-        error_message = ErrorMessage::new(code.as_u16(), err.description());
+        error_message = err.error_message();
     } else {
         code = StatusCode::INTERNAL_SERVER_ERROR;
         error_message = ErrorMessage::new(code.as_u16(), "UNHANDLED_REJECTION".to_string());
@@ -34,13 +35,13 @@ pub async fn handle_api_validation_error(
 }
 
 #[derive(Serialize)]
-struct ErrorMessage {
+pub struct ErrorMessage {
     code: u16,
     message: String,
 }
 
 impl ErrorMessage {
-    fn new(code: u16, message: String) -> ErrorMessage {
+    pub fn new(code: u16, message: String) -> ErrorMessage {
         ErrorMessage { code, message }
     }
 }

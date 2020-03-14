@@ -1,11 +1,13 @@
 use core::fmt;
-use std::error::Error;
 use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
 
+use warp::http::StatusCode;
 use warp::reject::Reject;
 
+use crate::error::Error;
 use crate::logging;
+use crate::rejection::ErrorMessage;
 
 #[derive(Debug)]
 pub struct ApiValidationError {
@@ -14,23 +16,6 @@ pub struct ApiValidationError {
 }
 
 impl ApiValidationError {
-    pub fn description(&self) -> String {
-        let kind_description = match self.kind {
-            ApiValidationErrorKind::MissingMatch => {
-                "could not find an api version in accept header"
-            }
-            ApiValidationErrorKind::UnableToParse => {
-                "api version in accept header could not be parsed"
-            }
-            ApiValidationErrorKind::WrongApiVersion => "api version is incorrect",
-        };
-
-        match &self.cause {
-            Some(s) => format!("{} : {}", kind_description, s),
-            None => kind_description.to_string(),
-        }
-    }
-
     #[cfg(test)]
     pub fn kind(&self) -> ApiValidationErrorKind {
         self.kind
@@ -67,7 +52,7 @@ impl From<&ApiValidationError> for ApiValidationError {
     }
 }
 
-impl Error for ApiValidationError {}
+impl std::error::Error for ApiValidationError {}
 
 impl Display for ApiValidationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -76,6 +61,33 @@ impl Display for ApiValidationError {
 }
 
 impl Reject for ApiValidationError {}
+
+impl crate::error::Error for ApiValidationError {
+    fn description(&self) -> String {
+        let kind_description = match self.kind {
+            ApiValidationErrorKind::MissingMatch => {
+                "could not find an api version in accept header"
+            }
+            ApiValidationErrorKind::UnableToParse => {
+                "api version in accept header could not be parsed"
+            }
+            ApiValidationErrorKind::WrongApiVersion => "api version is incorrect",
+        };
+
+        match &self.cause {
+            Some(s) => format!("{} : {}", kind_description, s),
+            None => kind_description.to_string(),
+        }
+    }
+
+    fn http_status_code(&self) -> StatusCode {
+        StatusCode::NOT_ACCEPTABLE
+    }
+
+    fn error_message(&self) -> ErrorMessage {
+        ErrorMessage::new(self.http_status_code().as_u16(), self.description())
+    }
+}
 
 impl logging::LogEntry for ApiValidationError {
     fn log_entry_kvps(&self) -> Vec<logging::LogEntryKVP> {
