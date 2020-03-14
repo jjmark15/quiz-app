@@ -8,6 +8,7 @@ use warp::reject::Reject;
 use warp::{Filter, Rejection};
 
 use crate::config::version::ApiVersion;
+use crate::logging;
 
 pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")
@@ -94,6 +95,12 @@ impl Display for ApiValidationError {
 }
 
 impl Reject for ApiValidationError {}
+
+impl logging::Log for ApiValidationError {
+    fn log_contents(&self) -> String {
+        format!("api validation error occurred: {}", self.description())
+    }
+}
 
 fn extract_api_version_from_accept_header(
     accept_header: &str,

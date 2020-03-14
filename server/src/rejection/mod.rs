@@ -1,12 +1,13 @@
 use std::convert::Infallible;
 
-use log::warn;
+use log::{debug, warn};
 use serde::Serialize;
 use warp::http::StatusCode;
 use warp::reply::Json;
 use warp::Rejection;
 
 use crate::filters::validate::api_version::ApiValidationError;
+use crate::logging;
 
 pub async fn handle_api_validation_error(
     rej: Rejection,
@@ -18,6 +19,7 @@ pub async fn handle_api_validation_error(
         code = StatusCode::NOT_FOUND;
         message = "NOT_FOUND".to_string();
     } else if let Some(err) = rej.find::<ApiValidationError>() {
+        debug!("{}", logging::log_string(err));
         code = StatusCode::NOT_ACCEPTABLE;
         message = err.description();
     } else {
