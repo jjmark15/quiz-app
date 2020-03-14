@@ -3,6 +3,7 @@ use std::fmt;
 use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
 
+use log::debug;
 use regex::Regex;
 use warp::reject::Reject;
 use warp::{Filter, Rejection};
@@ -19,12 +20,16 @@ pub fn validate_api_version() -> impl Filter<Extract = (), Error = Rejection> + 
                         if api_version.version() == ApiVersion::latest().version() {
                             Ok(())
                         } else {
-                            Err(warp::reject::custom(ApiValidationError::new(
-                                ApiValidationErrorKind::WrongApiVersion,
-                            )))
+                            let err =
+                                ApiValidationError::new(ApiValidationErrorKind::WrongApiVersion);
+                            debug!("{}", logging::log_string(&err));
+                            Err(warp::reject::custom(err))
                         }
                     }
-                    Err(e) => Err(warp::reject::custom(e)),
+                    Err(err) => {
+                        debug!("{}", logging::log_string(&err));
+                        Err(warp::reject::custom(err))
+                    }
                 }
             } else {
                 Ok(())
@@ -42,8 +47,12 @@ pub struct ApiValidationError {
 impl ApiValidationError {
     pub fn description(&self) -> String {
         let kind_description = match self.kind {
-            ApiValidationErrorKind::MissingMatch => "could not find a version in accept header",
-            ApiValidationErrorKind::UnableToParse => "version in accept header could not be parsed",
+            ApiValidationErrorKind::MissingMatch => {
+                "could not find an api version in accept header"
+            }
+            ApiValidationErrorKind::UnableToParse => {
+                "api version in accept header could not be parsed"
+            }
             ApiValidationErrorKind::WrongApiVersion => "api version is incorrect",
             ApiValidationErrorKind::Unknown => "unknown error",
         };
@@ -100,8 +109,8 @@ impl logging::LogEntry for ApiValidationError {
     fn log_entry_kvps(&self) -> Vec<logging::LogEntryKVP> {
         vec![
             logging::LogEntryKVP::new("type", "error"),
-            logging::LogEntryKVP::new("message", self.description()),
             logging::LogEntryKVP::new("kind", format!("ApiValidationError::{:?}", self.kind)),
+            logging::LogEntryKVP::new("message", self.description()),
         ]
     }
 }
