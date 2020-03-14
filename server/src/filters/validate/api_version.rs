@@ -96,9 +96,13 @@ impl Display for ApiValidationError {
 
 impl Reject for ApiValidationError {}
 
-impl logging::Log for ApiValidationError {
-    fn log_contents(&self) -> String {
-        format!("api validation error occurred: {}", self.description())
+impl logging::LogEntry for ApiValidationError {
+    fn log_entry_kvps(&self) -> Vec<logging::LogEntryKVP> {
+        vec![
+            logging::LogEntryKVP::new("type", "error"),
+            logging::LogEntryKVP::new("message", self.description()),
+            logging::LogEntryKVP::new("kind", format!("ApiValidationError::{:?}", self.kind)),
+        ]
     }
 }
 
