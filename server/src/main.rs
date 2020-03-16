@@ -12,5 +12,5 @@ async fn main() {
 
     const PORT: u16 = 3030;
     info!("welcome to my lovely server");
-    warp::serve(api).run(([127, 0, 0, 1], PORT)).await;
+    warp::serve(api).run(([0, 0, 0, 0], PORT)).await;
 }
