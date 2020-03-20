@@ -5,7 +5,7 @@ use warp::test::request;
 
 use server::filters::app_filters;
 
-use crate::common::{get_request_default_mime_prefix, get_request_endpoint_string};
+use crate::common::{default_application_accept_header, get_request_endpoint_string};
 
 #[tokio::test]
 async fn accept_header_with_valid_api_version_returns_ok() {
@@ -16,7 +16,7 @@ async fn accept_header_with_valid_api_version_returns_ok() {
         .path(get_request_endpoint_string("/greeting/hello").as_ref())
         .header(
             "accept",
-            format!("{}+text", get_request_default_mime_prefix()),
+            format!("{}+text", default_application_accept_header()),
         )
         .reply(&api)
         .await;
