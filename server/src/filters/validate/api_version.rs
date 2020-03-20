@@ -49,7 +49,7 @@ fn extract_api_version_from_accept_header<T: AsRef<str>>(
 
     match result {
         Some(captures) => match captures.get(1) {
-            Some(m) => match m.as_str().parse::<u16>() {
+            Some(m) => match m.as_str().parse::<u32>() {
                 Ok(u) => Ok(ApiVersion::from(u)),
                 Err(e) => Err(e.into()),
             },

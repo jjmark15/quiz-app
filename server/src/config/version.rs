@@ -1,8 +1,12 @@
-const API_VERSION_LATEST: ApiVersion = ApiVersion { version: 0 };
+use pkg_version::pkg_version_major;
+
+const API_VERSION_LATEST: ApiVersion = ApiVersion {
+    version: pkg_version_major!(),
+};
 
 #[derive(Eq, PartialEq, Debug, Default)]
 pub struct ApiVersion {
-    version: u16,
+    version: u32,
 }
 
 impl ApiVersion {
@@ -10,7 +14,7 @@ impl ApiVersion {
         &API_VERSION_LATEST
     }
 
-    pub fn version(&self) -> u16 {
+    pub fn version(&self) -> u32 {
         self.version
     }
 
@@ -18,7 +22,7 @@ impl ApiVersion {
         format!("v{}", self.version())
     }
 
-    pub fn new(version: u16) -> ApiVersion {
+    pub fn new(version: u32) -> ApiVersion {
         ApiVersion { version }
     }
 
@@ -27,8 +31,8 @@ impl ApiVersion {
     }
 }
 
-impl From<u16> for ApiVersion {
-    fn from(u: u16) -> Self {
+impl From<u32> for ApiVersion {
+    fn from(u: u32) -> Self {
         ApiVersion::new(u)
     }
 }

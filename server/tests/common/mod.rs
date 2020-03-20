@@ -1,3 +1,4 @@
+use pkg_version::pkg_version_major;
 use warp::test::{request, RequestBuilder};
 
 pub fn get_request_endpoint_string(partial_endpoint: &str) -> String {
@@ -11,8 +12,8 @@ pub fn get_request_endpoint_string(partial_endpoint: &str) -> String {
     vec!["/api".to_string(), trimmed_partial.to_string()].join("/")
 }
 
-pub fn default_application_accept_header() -> &'static str {
-    "application/vnd.warpj.v0"
+pub fn default_application_accept_header() -> String {
+    format!("application/vnd.warpj.v{}", pkg_version_major!())
 }
 
 pub fn default_request_builder() -> RequestBuilder {
