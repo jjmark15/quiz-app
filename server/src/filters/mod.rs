@@ -4,11 +4,12 @@ use warp::Filter;
 
 use crate::rejection::handle_api_validation_error;
 
+pub mod admin;
 pub mod greeting;
 pub mod quiz;
 pub mod validate;
 
-pub fn app_filters() -> impl Filter<Extract = impl warp::Reply, Error = Infallible> + Clone {
+fn api_filters() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     warp::path("api")
         .and(
             warp::header::exact("accept", "*/*")
@@ -16,5 +17,10 @@ pub fn app_filters() -> impl Filter<Extract = impl warp::Reply, Error = Infallib
                 .unify(),
         )
         .and(greeting::greet().or(quiz::quiz()))
+}
+
+pub fn app_filters() -> impl Filter<Extract = impl warp::Reply, Error = Infallible> + Clone {
+    api_filters()
+        .or(admin::admin_filters())
         .recover(handle_api_validation_error)
 }
