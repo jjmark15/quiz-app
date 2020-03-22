@@ -1,6 +1,6 @@
 use std::fmt::Formatter;
 
-pub trait LogEntry {
+pub(crate) trait LogEntry {
     fn log_contents(&self) -> String {
         format::join_entries(self.log_entry_kvps())
     }
@@ -8,13 +8,13 @@ pub trait LogEntry {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP>;
 }
 
-pub struct LogEntryKVP {
+pub(crate) struct LogEntryKVP {
     key: String,
     value: LogEntryValue,
 }
 
 impl LogEntryKVP {
-    pub fn new<K: AsRef<str>, V: Into<LogEntryValue>>(key: K, value: V) -> LogEntryKVP {
+    pub(crate) fn new<K: AsRef<str>, V: Into<LogEntryValue>>(key: K, value: V) -> LogEntryKVP {
         LogEntryKVP {
             key: key.as_ref().to_string(),
             value: value.into(),
@@ -28,7 +28,7 @@ impl std::fmt::Display for LogEntryKVP {
     }
 }
 
-pub struct LogEntryValue {
+pub(crate) struct LogEntryValue {
     value: String,
 }
 
@@ -39,7 +39,7 @@ impl std::fmt::Display for LogEntryValue {
 }
 
 impl LogEntryValue {
-    pub fn new(value: String) -> LogEntryValue {
+    pub(crate) fn new(value: String) -> LogEntryValue {
         LogEntryValue { value }
     }
 }
@@ -59,14 +59,14 @@ impl<T: AsRef<str>> From<T> for LogEntryValue {
     }
 }
 
-pub fn log_string<T: LogEntry>(entry: &T) -> String {
+pub(crate) fn log_string<T: LogEntry>(entry: &T) -> String {
     entry.log_contents()
 }
 
 mod format {
     use crate::logging::LogEntryKVP;
 
-    pub fn join_entries(entries: Vec<LogEntryKVP>) -> String {
+    pub(crate) fn join_entries(entries: Vec<LogEntryKVP>) -> String {
         let entry_strings: Vec<String> =
             entries.iter().map(move |entry| entry.to_string()).collect();
 
@@ -75,7 +75,7 @@ mod format {
 }
 
 #[cfg(test)]
-pub mod tests {
+pub(crate) mod tests {
     use spectral::prelude::*;
 
     use super::*;

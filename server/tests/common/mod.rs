@@ -1,7 +1,7 @@
 use pkg_version::pkg_version_major;
 use warp::test::{request, RequestBuilder};
 
-pub fn get_request_endpoint_string(partial_endpoint: &str) -> String {
+pub(crate) fn get_request_endpoint_string(partial_endpoint: &str) -> String {
     let trimmed_partial = {
         if partial_endpoint.starts_with('/') {
             partial_endpoint.get(1..).unwrap()
@@ -12,10 +12,10 @@ pub fn get_request_endpoint_string(partial_endpoint: &str) -> String {
     vec!["/api".to_string(), trimmed_partial.to_string()].join("/")
 }
 
-pub fn default_application_accept_header() -> String {
+pub(crate) fn default_application_accept_header() -> String {
     format!("application/vnd.warpj.v{}", pkg_version_major!())
 }
 
-pub fn default_request_builder() -> RequestBuilder {
+pub(crate) fn default_request_builder() -> RequestBuilder {
     request().header("Accept", default_application_accept_header())
 }

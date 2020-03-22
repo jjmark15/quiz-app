@@ -2,7 +2,8 @@ use warp::Filter;
 
 use crate::handlers::admin;
 
-pub fn admin_filters() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+pub(crate) fn admin_filters(
+) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     warp::path("admin").and(status())
 }
 

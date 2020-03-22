@@ -1,2 +1,2 @@
-pub mod admin;
-pub mod greeting;
+pub(crate) mod admin;
+pub(crate) mod greeting;

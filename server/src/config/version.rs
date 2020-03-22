@@ -5,28 +5,25 @@ const API_VERSION_LATEST: ApiVersion = ApiVersion {
 };
 
 #[derive(Eq, PartialEq, Debug, Default)]
-pub struct ApiVersion {
+pub(crate) struct ApiVersion {
     version: u32,
 }
 
 impl ApiVersion {
-    pub fn latest() -> &'static ApiVersion {
+    pub(crate) fn latest() -> &'static ApiVersion {
         &API_VERSION_LATEST
     }
 
-    pub fn version(&self) -> u32 {
+    #[cfg(test)]
+    pub(crate) fn version(&self) -> u32 {
         self.version
     }
 
-    pub fn version_string(&self) -> String {
-        format!("v{}", self.version())
-    }
-
-    pub fn new(version: u32) -> ApiVersion {
+    pub(crate) fn new(version: u32) -> ApiVersion {
         ApiVersion { version }
     }
 
-    pub fn is_latest(&self) -> bool {
+    pub(crate) fn is_latest(&self) -> bool {
         self.eq(ApiVersion::latest())
     }
 }

@@ -7,28 +7,27 @@ use warp::reject::Reject;
 
 use crate::error::Error;
 use crate::logging;
-use crate::rejection::ErrorMessage;
 
 #[derive(Debug)]
-pub struct ApiValidationError {
+pub(crate) struct ApiValidationError {
     kind: ApiValidationErrorKind,
     cause: Option<String>,
 }
 
 impl ApiValidationError {
     #[cfg(test)]
-    pub fn kind(&self) -> ApiValidationErrorKind {
+    pub(crate) fn kind(&self) -> ApiValidationErrorKind {
         self.kind
     }
 
-    pub fn new(kind: ApiValidationErrorKind) -> ApiValidationError {
+    pub(crate) fn new(kind: ApiValidationErrorKind) -> ApiValidationError {
         ApiValidationError { kind, cause: None }
     }
 }
 
 #[derive(Debug, Copy, Clone)]
 #[cfg_attr(test, derive(Eq, PartialEq))]
-pub enum ApiValidationErrorKind {
+pub(crate) enum ApiValidationErrorKind {
     MissingMatch,
     UnableToParse,
     WrongApiVersion,
@@ -82,10 +81,6 @@ impl crate::error::Error for ApiValidationError {
 
     fn http_status_code(&self) -> StatusCode {
         StatusCode::NOT_ACCEPTABLE
-    }
-
-    fn error_message(&self) -> ErrorMessage {
-        ErrorMessage::new(self.http_status_code().as_u16(), self.description())
     }
 }
 
