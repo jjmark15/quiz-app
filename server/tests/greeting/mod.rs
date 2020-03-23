@@ -4,13 +4,11 @@ use spectral::prelude::*;
 use warp::http::method::Method;
 use warp::http::StatusCode;
 
-use server::filters::app_filters;
-
-use crate::common::{default_request_builder, get_request_endpoint_string};
+use crate::common::{default_request_builder, get_request_endpoint_string, routes_under_test};
 
 #[tokio::test]
 async fn hello_world() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = default_request_builder()
         .method(Method::GET.as_str())
@@ -31,7 +29,7 @@ async fn hello_world() {
 
 #[tokio::test]
 async fn hello_person() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = default_request_builder()
         .method(Method::GET.as_str())

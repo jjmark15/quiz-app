@@ -3,13 +3,13 @@ use warp::http::method::Method;
 use warp::http::StatusCode;
 use warp::test::request;
 
-use server::filters::app_filters;
-
-use crate::common::{default_application_accept_header, get_request_endpoint_string};
+use crate::common::{
+    default_application_accept_header, get_request_endpoint_string, routes_under_test,
+};
 
 #[tokio::test]
 async fn accept_header_with_valid_api_version_returns_ok() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = request()
         .method(Method::GET.as_str())
@@ -28,7 +28,7 @@ async fn accept_header_with_valid_api_version_returns_ok() {
 
 #[tokio::test]
 async fn accept_header_with_invalid_api_version_returns_not_acceptable() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = request()
         .method(Method::GET.as_str())
@@ -44,7 +44,7 @@ async fn accept_header_with_invalid_api_version_returns_not_acceptable() {
 
 #[tokio::test]
 async fn accept_header_with_incorrect_api_version_returns_not_acceptable() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = request()
         .method(Method::GET.as_str())
@@ -60,7 +60,7 @@ async fn accept_header_with_incorrect_api_version_returns_not_acceptable() {
 
 #[tokio::test]
 async fn validation_is_skipped_if_accept_header_is_not_present() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = request()
         .method(Method::GET.as_str())
@@ -75,7 +75,7 @@ async fn validation_is_skipped_if_accept_header_is_not_present() {
 
 #[tokio::test]
 async fn validation_is_skipped_if_client_accepts_any_content_type() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = request()
         .method(Method::GET.as_str())

@@ -5,11 +5,11 @@ use warp::http::method::Method;
 use warp::http::StatusCode;
 use warp::test::request;
 
-use server::filters::app_filters;
+use crate::common::routes_under_test;
 
 #[tokio::test]
 async fn returns_ok_status_and_body_when_up() {
-    let api = app_filters();
+    let api = routes_under_test();
 
     let resp = request()
         .method(Method::GET.as_str())
