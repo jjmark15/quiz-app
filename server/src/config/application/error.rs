@@ -4,8 +4,8 @@ use std::fmt::Display;
 use serde::export::Formatter;
 use warp::http::StatusCode;
 
-use crate::error::Error as CrateError;
 use crate::logging::LogEntryKVP;
+use crate::web::error::Error as WebError;
 
 #[derive(Debug)]
 pub(crate) enum Error {
@@ -15,7 +15,7 @@ pub(crate) enum Error {
     ValueOverrideEnvNotSet,
 }
 
-impl CrateError for Error {
+impl WebError for Error {
     fn description(&self) -> String {
         match self {
             Error::InvalidProfile => String::from("received invalid application profile string"),

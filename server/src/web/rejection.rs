@@ -4,10 +4,10 @@ use log::{debug, warn};
 use warp::http::StatusCode;
 use warp::{Rejection, Reply};
 
-use crate::error::{Error, ErrorMessage};
-use crate::filters::validate::api_version::error::ApiValidationError;
 use crate::logging::log_string;
-use crate::response::ErrorResponse;
+use crate::web::error::{Error, ErrorMessage};
+use crate::web::filters::validate::api_version::error::ApiValidationError;
+use crate::web::response::ErrorResponse;
 
 pub(crate) async fn handle_rejection(
     rej: Rejection,

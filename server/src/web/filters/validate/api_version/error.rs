@@ -5,8 +5,8 @@ use std::num::ParseIntError;
 use warp::http::StatusCode;
 use warp::reject::Reject;
 
-use crate::error::Error;
 use crate::logging;
+use crate::web::error::Error;
 
 #[derive(Debug)]
 pub(crate) struct ApiValidationError {
@@ -61,7 +61,7 @@ impl Display for ApiValidationError {
 
 impl Reject for ApiValidationError {}
 
-impl crate::error::Error for ApiValidationError {
+impl crate::web::error::Error for ApiValidationError {
     fn description(&self) -> String {
         let kind_description = match self.kind {
             ApiValidationErrorKind::MissingMatch => {

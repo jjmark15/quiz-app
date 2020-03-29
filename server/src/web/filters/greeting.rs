@@ -1,6 +1,6 @@
 use warp::Filter;
 
-use crate::handlers::greeting;
+use crate::web::handlers::greeting;
 
 pub(crate) fn greet() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone
 {

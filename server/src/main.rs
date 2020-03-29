@@ -1,6 +1,6 @@
 extern crate pretty_env_logger;
 
-use server::App;
+use server::app::App;
 
 #[tokio::main]
 async fn main() {

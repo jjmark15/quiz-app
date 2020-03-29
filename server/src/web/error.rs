@@ -3,7 +3,7 @@ use warp::reply::Json;
 use warp::Reply;
 
 use crate::logging::{LogEntry, LogEntryKVP};
-use crate::response::ErrorResponse;
+use crate::web::response::ErrorResponse;
 
 #[derive(Serialize)]
 pub(crate) struct ErrorMessage {
