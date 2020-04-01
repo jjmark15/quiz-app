@@ -11,7 +11,7 @@ use crate::web::error::Error as WebError;
 pub(crate) enum Error {
     InvalidProfile,
     ProfileEnvNotSet,
-    InvalidVariableOverride,
+    InvalidValueOverride,
     ValueOverrideEnvNotSet,
 }
 
@@ -22,7 +22,7 @@ impl WebError for Error {
             Error::ProfileEnvNotSet => {
                 String::from("application profile environment variable is not set")
             }
-            Error::InvalidVariableOverride => {
+            Error::InvalidValueOverride => {
                 String::from("received invalid environment variable override")
             }
             Error::ValueOverrideEnvNotSet => {

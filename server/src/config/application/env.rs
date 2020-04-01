@@ -65,7 +65,7 @@ impl<'a, T: FromStr + Eq + PartialEq + Copy, Reader: EnvReader> Overrideable<'a,
                     v
                 }
                 Err(_e) => {
-                    log::warn!("{}", log_string(&Error::InvalidVariableOverride));
+                    log::warn!("{}", log_string(&Error::InvalidValueOverride));
                     self.default
                 }
             },
