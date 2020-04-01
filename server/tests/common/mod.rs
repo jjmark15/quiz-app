@@ -1,5 +1,3 @@
-use std::convert::Infallible;
-
 use pkg_version::pkg_version_major;
 use warp::test::{request, RequestBuilder};
 use warp::Filter;
@@ -26,6 +24,6 @@ pub(crate) fn default_request_builder() -> RequestBuilder {
 }
 
 pub(crate) fn routes_under_test(
-) -> impl Filter<Extract = impl warp::Reply, Error = Infallible> + Clone {
+) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     routes()
 }
