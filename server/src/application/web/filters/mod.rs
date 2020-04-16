@@ -2,6 +2,7 @@ use warp::Filter;
 
 pub(crate) mod admin;
 pub(crate) mod greeting;
+pub(crate) mod quiz;
 pub(crate) mod validate;
 
 pub(crate) fn api_filters(
@@ -12,5 +13,5 @@ pub(crate) fn api_filters(
                 .or(validate::api::version::valid_api_version())
                 .unify(),
         )
-        .and(greeting::greet())
+        .and(greeting::greet().or(quiz::quiz_routes()))
 }

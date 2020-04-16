@@ -4,6 +4,7 @@ use crate::application::web::routes;
 
 pub(crate) mod config;
 pub(crate) mod logging;
+pub(crate) mod services;
 pub(crate) mod web;
 
 pub struct App;
