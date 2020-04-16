@@ -9,8 +9,8 @@ use crate::application::web::error::Error as WebError;
 
 #[derive(Debug)]
 pub(crate) enum Error {
-    InvalidProfile(String),
-    ProfileEnvNotSet,
+    InvalidApplicationProfile(String),
+    ApplicationProfileEnvNotSet,
     InvalidValueOverride,
     ValueOverrideEnvNotSet,
 }
@@ -18,10 +18,10 @@ pub(crate) enum Error {
 impl WebError for Error {
     fn description(&self) -> String {
         match self {
-            Error::InvalidProfile(p) => {
+            Error::InvalidApplicationProfile(p) => {
                 format!("received invalid application profile string: {}", p)
             }
-            Error::ProfileEnvNotSet => {
+            Error::ApplicationProfileEnvNotSet => {
                 String::from("application profile environment variable is not set")
             }
             Error::InvalidValueOverride => {

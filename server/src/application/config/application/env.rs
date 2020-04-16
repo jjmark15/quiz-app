@@ -7,7 +7,7 @@ use log;
 #[cfg(test)]
 use mockall::automock;
 
-use crate::application::config::application::error::Error;
+use crate::application::config::error::Error;
 use crate::application::logging::log_string;
 
 #[cfg_attr(test, automock)]

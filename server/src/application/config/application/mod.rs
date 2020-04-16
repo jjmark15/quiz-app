@@ -3,14 +3,13 @@ use std::str::FromStr;
 use getset::MutGetters;
 use log;
 
-use error::Error as ConfigError;
-
 use crate::application::config::application::env::EnvReader;
 use crate::application::config::application::web::WebConfig;
 use crate::application::logging::log_string;
 
+use super::error::Error as ConfigError;
+
 pub(crate) mod env;
-mod error;
 mod web;
 
 #[derive(Eq, PartialEq, Debug)]
@@ -32,7 +31,7 @@ impl FromStr for ConfigProfile {
         } else if lowercase.eq("prod") {
             Ok(ConfigProfile::PROD)
         } else {
-            Err(ConfigError::InvalidProfile(s.to_string()))
+            Err(ConfigError::InvalidApplicationProfile(s.to_string()))
         }
     }
 }
