@@ -1,5 +1,5 @@
-use crate::application::config::application::env::{EnvReader, Overrideable};
-use crate::application::config::application::{ConfigProfile, ProfileDependentConfig};
+use crate::application::config::env::{EnvReader, Overrideable};
+use crate::application::config::{ConfigProfile, ProfileDependentConfig};
 
 #[derive(Eq, PartialEq, Debug)]
 pub(crate) struct WebConfig<'a, Reader: EnvReader> {

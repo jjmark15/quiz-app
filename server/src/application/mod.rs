@@ -1,5 +1,5 @@
-use crate::application::config::application::env::EnvReaderImpl;
-use crate::application::config::application::ApplicationConfig;
+use crate::application::config::env::EnvReaderImpl;
+use crate::application::config::ApplicationConfig;
 use crate::application::web::routes;
 
 pub(crate) mod config;
