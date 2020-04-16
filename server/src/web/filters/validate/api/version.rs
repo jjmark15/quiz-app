@@ -2,12 +2,9 @@ use log::debug;
 use regex::Regex;
 use warp::{Filter, Rejection};
 
-use error::{ApiValidationError, ApiValidationErrorKind};
-
 use crate::config::version::ApiVersion;
 use crate::logging;
-
-pub(crate) mod error;
+use crate::web::filters::validate::api::error::{ApiValidationError, ApiValidationErrorKind};
 
 pub(crate) fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")
