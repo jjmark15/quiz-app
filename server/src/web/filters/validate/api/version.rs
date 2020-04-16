@@ -4,7 +4,7 @@ use warp::{Filter, Rejection};
 
 use crate::config::version::ApiVersion;
 use crate::logging;
-use crate::web::filters::validate::api::error::{ApiValidationError, ApiValidationErrorKind};
+use crate::web::filters::validate::api::error::ApiValidationError;
 
 pub(crate) fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")
@@ -18,7 +18,7 @@ async fn validate_api_version(optional_accept_string: Option<String>) -> Result<
         match extract_api_version_from_accept_header(accept_string) {
             Ok(api_version) => {
                 if !api_version.is_latest() {
-                    return handle_old_api_version();
+                    return handle_old_api_version(api_version);
                 }
                 Ok(())
             }
@@ -30,8 +30,8 @@ async fn validate_api_version(optional_accept_string: Option<String>) -> Result<
     }
 }
 
-fn handle_old_api_version() -> Result<(), Rejection> {
-    let err = ApiValidationError::new(ApiValidationErrorKind::WrongApiVersion);
+fn handle_old_api_version(version: ApiVersion) -> Result<(), Rejection> {
+    let err: ApiValidationError = ApiValidationError::WrongApiVersion(version);
     debug!("{}", logging::log_string(&err));
     Err(warp::reject::custom(err))
 }
@@ -53,13 +53,9 @@ fn extract_api_version_from_accept_header<T: AsRef<str>>(
                 Ok(u) => Ok(ApiVersion::from(u)),
                 Err(e) => Err(e.into()),
             },
-            None => Err(ApiValidationError::new(
-                ApiValidationErrorKind::MissingMatch,
-            )),
+            None => Err(ApiValidationError::MissingMatch),
         },
-        None => Err(ApiValidationError::new(
-            ApiValidationErrorKind::MissingMatch,
-        )),
+        None => Err(ApiValidationError::MissingMatch),
     }
 }
 
@@ -106,7 +102,7 @@ pub(crate) mod tests {
         let e = result.unwrap_err();
 
         asserting("regex parser could not match a version number")
-            .that(&e.kind())
-            .is_equal_to(ApiValidationErrorKind::MissingMatch);
+            .that(&e)
+            .is_equal_to(ApiValidationError::MissingMatch);
     }
 }

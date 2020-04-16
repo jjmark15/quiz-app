@@ -5,49 +5,21 @@ use std::num::ParseIntError;
 use warp::http::StatusCode;
 use warp::reject::Reject;
 
+use crate::config::version::ApiVersion;
 use crate::logging;
-use crate::web::error::Error;
+use crate::logging::{LogEntry, LogEntryKVP};
+use crate::web::error::Error as WebError;
 
-#[derive(Debug)]
-pub(crate) struct ApiValidationError {
-    kind: ApiValidationErrorKind,
-    cause: Option<String>,
-}
-
-impl ApiValidationError {
-    #[cfg(test)]
-    pub(crate) fn kind(&self) -> ApiValidationErrorKind {
-        self.kind
-    }
-
-    pub(crate) fn new(kind: ApiValidationErrorKind) -> ApiValidationError {
-        ApiValidationError { kind, cause: None }
-    }
-}
-
-#[derive(Debug, Copy, Clone)]
-#[cfg_attr(test, derive(Eq, PartialEq))]
-pub(crate) enum ApiValidationErrorKind {
+#[derive(Debug, Eq, PartialEq)]
+pub(crate) enum ApiValidationError {
     MissingMatch,
-    UnableToParse,
-    WrongApiVersion,
+    UnableToParse(ParseIntError),
+    WrongApiVersion(ApiVersion),
 }
 
 impl From<ParseIntError> for ApiValidationError {
     fn from(p: ParseIntError) -> Self {
-        ApiValidationError {
-            kind: ApiValidationErrorKind::UnableToParse,
-            cause: Some(p.to_string()),
-        }
-    }
-}
-
-impl From<&ApiValidationError> for ApiValidationError {
-    fn from(original: &ApiValidationError) -> Self {
-        ApiValidationError {
-            kind: original.kind,
-            cause: original.cause.clone(),
-        }
+        ApiValidationError::UnableToParse(p)
     }
 }
 
@@ -55,7 +27,7 @@ impl std::error::Error for ApiValidationError {}
 
 impl Display for ApiValidationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        self.description().fmt(f)
+        WebError::description(self).fmt(f)
     }
 }
 
@@ -63,19 +35,16 @@ impl Reject for ApiValidationError {}
 
 impl crate::web::error::Error for ApiValidationError {
     fn description(&self) -> String {
-        let kind_description = match self.kind {
-            ApiValidationErrorKind::MissingMatch => {
-                "could not find an api version in accept header"
+        match self {
+            ApiValidationError::MissingMatch => {
+                "could not find an api version in accept header".to_string()
             }
-            ApiValidationErrorKind::UnableToParse => {
-                "api version in accept header could not be parsed"
+            ApiValidationError::UnableToParse(p) => {
+                format!("api version could not be parsed as {}", p)
             }
-            ApiValidationErrorKind::WrongApiVersion => "api version is incorrect",
-        };
-
-        match &self.cause {
-            Some(s) => format!("{} : {}", kind_description, s),
-            None => kind_description.to_string(),
+            ApiValidationError::WrongApiVersion(v) => {
+                format!("api version {} is incorrect", v.version())
+            }
         }
     }
 
@@ -84,12 +53,11 @@ impl crate::web::error::Error for ApiValidationError {
     }
 }
 
-impl logging::LogEntry for ApiValidationError {
-    fn log_entry_kvps(&self) -> Vec<logging::LogEntryKVP> {
+impl LogEntry for ApiValidationError {
+    fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {
         vec![
             logging::LogEntryKVP::new("type", "error"),
-            logging::LogEntryKVP::new("kind", format!("ApiValidationError::{:?}", self.kind)),
-            logging::LogEntryKVP::new("message", self.description()),
+            logging::LogEntryKVP::new("message", WebError::description(self)),
         ]
     }
 }

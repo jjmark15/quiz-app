@@ -32,7 +32,7 @@ impl FromStr for ConfigProfile {
         } else if lowercase.eq("prod") {
             Ok(ConfigProfile::PROD)
         } else {
-            Err(ConfigError::InvalidProfile)
+            Err(ConfigError::InvalidProfile(s.to_string()))
         }
     }
 }

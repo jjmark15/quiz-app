@@ -14,7 +14,6 @@ impl ApiVersion {
         &API_VERSION_LATEST
     }
 
-    #[cfg(test)]
     pub(crate) fn version(&self) -> u32 {
         self.version
     }
