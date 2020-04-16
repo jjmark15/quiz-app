@@ -2,9 +2,9 @@ use crate::application::config::env::EnvReaderImpl;
 use crate::application::config::ApplicationConfig;
 use crate::application::web::routes;
 
-pub(crate) mod config;
-pub(crate) mod logging;
-pub(crate) mod services;
+mod config;
+mod logging;
+mod services;
 pub(crate) mod web;
 
 pub struct App;
