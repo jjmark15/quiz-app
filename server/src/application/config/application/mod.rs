@@ -5,9 +5,9 @@ use log;
 
 use error::Error as ConfigError;
 
-use crate::config::application::env::EnvReader;
-use crate::config::application::web::WebConfig;
-use crate::logging::log_string;
+use crate::application::config::application::env::EnvReader;
+use crate::application::config::application::web::WebConfig;
+use crate::application::logging::log_string;
 
 pub(crate) mod env;
 mod error;
@@ -101,7 +101,7 @@ pub(crate) mod tests {
             .expect_read()
             .with(eq("WARPJ_ACTIVE_PROFILE"))
             .returning(move |_| Err(VarError::NotPresent));
-        asserting("default application config is loaded")
+        asserting("default application application.config is loaded")
             .that(&ApplicationConfig::from_env(&env_reader))
             .is_equal_to(&ApplicationConfig {
                 web: WebConfig::with_profile(ConfigProfile::DEFAULT, &env_reader),
@@ -111,7 +111,7 @@ pub(crate) mod tests {
     #[test]
     fn loads_default_application_config_with_default_profile_specified() {
         let env_reader = mock_env_reader("WARPJ_ACTIVE_PROFILE", "default");
-        asserting("default application config is loaded")
+        asserting("default application application.config is loaded")
             .that(&ApplicationConfig::from_env(&env_reader))
             .is_equal_to(&ApplicationConfig {
                 web: WebConfig::with_profile(ConfigProfile::DEFAULT, &env_reader),
@@ -121,7 +121,7 @@ pub(crate) mod tests {
     #[test]
     fn loads_dev_application_config_with_dev_profile_specified() {
         let env_reader = mock_env_reader("WARPJ_ACTIVE_PROFILE", "dev");
-        asserting("dev application config is loaded")
+        asserting("dev application application.config is loaded")
             .that(&ApplicationConfig::from_env(&env_reader))
             .is_equal_to(&ApplicationConfig {
                 web: WebConfig::with_profile(ConfigProfile::DEV, &env_reader),
@@ -131,7 +131,7 @@ pub(crate) mod tests {
     #[test]
     fn loads_prod_application_config_with_prod_profile_specified() {
         let env_reader = mock_env_reader("WARPJ_ACTIVE_PROFILE", "prod");
-        asserting("prod application config is loaded")
+        asserting("prod application application.config is loaded")
             .that(&ApplicationConfig::from_env(&env_reader))
             .is_equal_to(&ApplicationConfig {
                 web: WebConfig::with_profile(ConfigProfile::PROD, &env_reader),

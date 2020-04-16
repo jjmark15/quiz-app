@@ -2,8 +2,8 @@ use serde::Serialize;
 use warp::reply::Json;
 use warp::Reply;
 
-use crate::logging::{LogEntry, LogEntryKVP};
-use crate::web::response::ErrorResponse;
+use crate::application::logging::{LogEntry, LogEntryKVP};
+use crate::application::web::response::ErrorResponse;
 
 #[derive(Serialize)]
 pub(crate) struct ErrorMessage {

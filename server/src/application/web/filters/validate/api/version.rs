@@ -2,9 +2,9 @@ use log::debug;
 use regex::Regex;
 use warp::{Filter, Rejection};
 
-use crate::config::version::ApiVersion;
-use crate::logging;
-use crate::web::filters::validate::api::error::ApiValidationError;
+use crate::application::config::version::ApiVersion;
+use crate::application::logging;
+use crate::application::web::filters::validate::api::error::ApiValidationError;
 
 pub(crate) fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")
@@ -63,7 +63,7 @@ fn extract_api_version_from_accept_header<T: AsRef<str>>(
 pub(crate) mod tests {
     use spectral::prelude::*;
 
-    use crate::config::version::ApiVersion;
+    use crate::application::config::version::ApiVersion;
 
     use super::*;
 

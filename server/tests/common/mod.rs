@@ -2,7 +2,7 @@ use pkg_version::pkg_version_major;
 use warp::test::{request, RequestBuilder};
 use warp::Filter;
 
-use server::web::routes::routes;
+use server::routes;
 
 pub(crate) fn get_request_endpoint_string(partial_endpoint: &str) -> String {
     let trimmed_partial = {

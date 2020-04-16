@@ -4,8 +4,8 @@ use std::fmt::Display;
 use serde::export::Formatter;
 use warp::http::StatusCode;
 
-use crate::logging::LogEntryKVP;
-use crate::web::error::Error as WebError;
+use crate::application::logging::LogEntryKVP;
+use crate::application::web::error::Error as WebError;
 
 #[derive(Debug)]
 pub(crate) enum Error {
@@ -44,7 +44,7 @@ impl Display for Error {
     }
 }
 
-impl crate::logging::LogEntry for Error {
+impl crate::application::logging::LogEntry for Error {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {
         vec![
             LogEntryKVP::new("type", "error"),

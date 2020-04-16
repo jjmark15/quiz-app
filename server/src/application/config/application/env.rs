@@ -7,8 +7,8 @@ use log;
 #[cfg(test)]
 use mockall::automock;
 
-use crate::config::application::error::Error;
-use crate::logging::log_string;
+use crate::application::config::application::error::Error;
+use crate::application::logging::log_string;
 
 #[cfg_attr(test, automock)]
 pub(crate) trait EnvReader {

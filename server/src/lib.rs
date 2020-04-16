@@ -1,4 +1,4 @@
-pub mod app;
-pub(crate) mod config;
-pub(crate) mod logging;
-pub mod web;
+pub use application::web::routes::routes;
+pub use application::App;
+
+mod application;

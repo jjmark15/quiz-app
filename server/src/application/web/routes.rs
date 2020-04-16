@@ -1,7 +1,7 @@
 use warp::Filter;
 
-use crate::web::filters::{admin, api_filters};
-use crate::web::rejection::handle_rejection;
+use crate::application::web::filters::{admin, api_filters};
+use crate::application::web::rejection::handle_rejection;
 
 pub fn routes() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     api_filters()

@@ -5,10 +5,10 @@ use std::num::ParseIntError;
 use warp::http::StatusCode;
 use warp::reject::Reject;
 
-use crate::config::version::ApiVersion;
-use crate::logging;
-use crate::logging::{LogEntry, LogEntryKVP};
-use crate::web::error::Error as WebError;
+use crate::application::config::version::ApiVersion;
+use crate::application::logging;
+use crate::application::logging::{LogEntry, LogEntryKVP};
+use crate::application::web::error::Error as WebError;
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum ApiValidationError {
@@ -33,7 +33,7 @@ impl Display for ApiValidationError {
 
 impl Reject for ApiValidationError {}
 
-impl crate::web::error::Error for ApiValidationError {
+impl crate::application::web::error::Error for ApiValidationError {
     fn description(&self) -> String {
         match self {
             ApiValidationError::MissingMatch => {
