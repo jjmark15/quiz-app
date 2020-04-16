@@ -3,6 +3,7 @@ use crate::application::config::ApplicationConfig;
 use crate::application::web::routes;
 
 mod config;
+mod error;
 mod logging;
 mod services;
 pub(crate) mod web;

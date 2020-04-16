@@ -4,8 +4,9 @@ use std::fmt::Display;
 use serde::export::Formatter;
 use warp::http::StatusCode;
 
+use crate::application::error::ApplicationError;
 use crate::application::logging::LogEntryKVP;
-use crate::application::web::error::Error as WebError;
+use crate::application::web::error::WebError;
 
 #[derive(Debug)]
 pub(crate) enum Error {
@@ -16,6 +17,12 @@ pub(crate) enum Error {
 }
 
 impl WebError for Error {
+    fn http_status_code(&self) -> StatusCode {
+        StatusCode::NOT_IMPLEMENTED
+    }
+}
+
+impl ApplicationError for Error {
     fn description(&self) -> String {
         match self {
             Error::InvalidApplicationProfile(p) => {
@@ -31,10 +38,6 @@ impl WebError for Error {
                 String::from("value override environment variable is not set")
             }
         }
-    }
-
-    fn http_status_code(&self) -> StatusCode {
-        StatusCode::NOT_IMPLEMENTED
     }
 }
 

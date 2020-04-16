@@ -2,6 +2,7 @@ use serde::Serialize;
 use warp::reply::Json;
 use warp::Reply;
 
+use crate::application::error::ApplicationError;
 use crate::application::logging::{LogEntry, LogEntryKVP};
 use crate::application::web::response::ErrorResponse;
 
@@ -33,13 +34,14 @@ impl LogEntry for ErrorMessage {
     }
 }
 
-pub(crate) trait Error: std::error::Error + LogEntry {
-    fn description(&self) -> String;
-
+pub(crate) trait WebError: ApplicationError {
     fn http_status_code(&self) -> warp::http::StatusCode;
 
     fn error_message(&self) -> ErrorMessage {
-        ErrorMessage::new(self.http_status_code().as_u16(), Error::description(self))
+        ErrorMessage::new(
+            self.http_status_code().as_u16(),
+            ApplicationError::description(self),
+        )
     }
 
     fn error_response(&self) -> ErrorResponse {

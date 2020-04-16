@@ -6,9 +6,9 @@ use warp::http::StatusCode;
 use warp::reject::Reject;
 
 use crate::application::config::version::ApiVersion;
+use crate::application::error::ApplicationError;
 use crate::application::logging;
 use crate::application::logging::{LogEntry, LogEntryKVP};
-use crate::application::web::error::Error as WebError;
 
 #[derive(Debug, Eq, PartialEq)]
 pub(crate) enum ApiValidationError {
@@ -27,13 +27,19 @@ impl std::error::Error for ApiValidationError {}
 
 impl Display for ApiValidationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        WebError::description(self).fmt(f)
+        ApplicationError::description(self).fmt(f)
     }
 }
 
 impl Reject for ApiValidationError {}
 
-impl crate::application::web::error::Error for ApiValidationError {
+impl crate::application::web::error::WebError for ApiValidationError {
+    fn http_status_code(&self) -> StatusCode {
+        StatusCode::NOT_ACCEPTABLE
+    }
+}
+
+impl ApplicationError for ApiValidationError {
     fn description(&self) -> String {
         match self {
             ApiValidationError::MissingMatch => {
@@ -47,17 +53,13 @@ impl crate::application::web::error::Error for ApiValidationError {
             }
         }
     }
-
-    fn http_status_code(&self) -> StatusCode {
-        StatusCode::NOT_ACCEPTABLE
-    }
 }
 
 impl LogEntry for ApiValidationError {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {
         vec![
             logging::LogEntryKVP::new("type", "error"),
-            logging::LogEntryKVP::new("message", WebError::description(self)),
+            logging::LogEntryKVP::new("message", ApplicationError::description(self)),
         ]
     }
 }

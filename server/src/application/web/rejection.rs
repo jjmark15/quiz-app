@@ -2,7 +2,7 @@ use log::debug;
 use warp::Rejection;
 
 use crate::application::logging::log_string;
-use crate::application::web::error::Error;
+use crate::application::web::error::WebError;
 use crate::application::web::filters::validate::api::error::ApiValidationError;
 
 pub(crate) async fn handle_rejection(rej: Rejection) -> Result<impl warp::reply::Reply, Rejection> {
