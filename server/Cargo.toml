@@ -16,6 +16,7 @@ serde = { version = "1.0", features = ["derive"] }
 regex = "1"
 pkg-version = "^1.0"
 getset = "^0.1.0"
+quiz_domain = { path="../quiz_domain" }
 
 [dev-dependencies]
 spectral = "^0.6.0"

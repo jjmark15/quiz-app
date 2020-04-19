@@ -1,8 +1,9 @@
 use warp::Filter;
 
+use quiz_domain::models::quiz::question::ModelIDInterface;
+use quiz_domain::services::quiz::QuizServiceInterface;
+
 use crate::application::web::handlers::quiz::QuestionSetReply;
-use crate::domain::models::quiz::question::ModelIDInterface;
-use crate::domain::services::quiz::QuizServiceInterface;
 
 pub(crate) mod admin;
 pub(crate) mod greeting;

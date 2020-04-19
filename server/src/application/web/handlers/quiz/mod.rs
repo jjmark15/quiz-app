@@ -1,5 +1,5 @@
-use crate::domain::models::quiz::question::{ModelIDInterface, QuestionSetInterface};
-use crate::domain::services::quiz::QuizServiceInterface;
+use quiz_domain::models::quiz::question::{ModelIDInterface, QuestionSetInterface};
+use quiz_domain::services::quiz::QuizServiceInterface;
 
 pub trait QuestionSetReply<'a, ID: ModelIDInterface<'a>>:
     QuestionSetInterface<'a, ID> + warp::Reply
