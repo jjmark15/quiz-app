@@ -3,8 +3,8 @@ use warp::test::{request, RequestBuilder};
 use warp::Filter;
 
 use server::routes;
-use server::simple_domain_impl::models::quiz::question::{ModelIDImpl, QuestionSetImpl};
-use server::simple_domain_impl::services::quiz::QuizServiceImpl;
+use simple_quiz_domain_impl::models::quiz::question::{ModelIDImpl, QuestionSetImpl};
+use simple_quiz_domain_impl::services::quiz::QuizServiceImpl;
 
 pub(crate) fn get_request_endpoint_string(partial_endpoint: &str) -> String {
     let trimmed_partial = {

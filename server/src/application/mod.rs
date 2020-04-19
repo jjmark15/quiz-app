@@ -1,8 +1,9 @@
+use simple_quiz_domain_impl::models::quiz::question::{ModelIDImpl, QuestionSetImpl};
+use simple_quiz_domain_impl::services::quiz::QuizServiceImpl;
+
 use crate::application::config::env::EnvReaderImpl;
 use crate::application::config::ApplicationConfig;
 use crate::application::web::routes;
-use crate::simple_domain_impl::models::quiz::question::{ModelIDImpl, QuestionSetImpl};
-use crate::simple_domain_impl::services::quiz::QuizServiceImpl;
 
 mod config;
 mod error;
