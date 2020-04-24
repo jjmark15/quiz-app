@@ -17,7 +17,6 @@ regex = "1"
 pkg-version = "^1.0"
 getset = "^0.1.0"
 quiz_domain = { path="../quiz_domain" }
-simple_quiz_domain_impl = { path="../simple_quiz_domain_impl" }
 
 [dev-dependencies]
 spectral = "^0.6.0"

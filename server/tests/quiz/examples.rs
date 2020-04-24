@@ -24,5 +24,5 @@ async fn gives_example_question_set() {
 
     asserting("json response body is an example question set")
         .that(&body)
-        .is_equal_to("{\"id\":0,\"name\":\"Example question set title\"}".to_string())
+        .is_equal_to("{\"id\":\"0\",\"name\":\"Example question set title\"}".to_string())
 }

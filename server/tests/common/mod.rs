@@ -2,9 +2,9 @@ use pkg_version::pkg_version_major;
 use warp::test::{request, RequestBuilder};
 use warp::Filter;
 
+use quiz_domain::models::quiz::question::QuestionSetImpl;
+use quiz_domain::services::quiz::QuizServiceImpl;
 use server::routes;
-use simple_quiz_domain_impl::models::quiz::question::{ModelIDImpl, QuestionSetImpl};
-use simple_quiz_domain_impl::services::quiz::QuizServiceImpl;
 
 pub(crate) fn get_request_endpoint_string(partial_endpoint: &str) -> String {
     let trimmed_partial = {
@@ -27,5 +27,5 @@ pub(crate) fn default_request_builder() -> RequestBuilder {
 
 pub(crate) fn routes_under_test(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
-    routes::<ModelIDImpl, QuestionSetImpl, QuizServiceImpl>()
+    routes::<QuestionSetImpl, QuizServiceImpl>()
 }
