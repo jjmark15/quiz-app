@@ -13,9 +13,7 @@ pub trait QuestionSetInterface<'a>: Debug + Deserialize<'a> + Serialize + Clone 
 
     fn name(&self) -> &String;
 
-    fn with_id(name: String, id: ModelIDImpl) -> Self;
-
-    fn with_name(name: String) -> Self;
+    fn new<ID: Into<ModelIDImpl>>(id: ID, name: String) -> Self;
 }
 
 #[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
@@ -26,6 +24,12 @@ pub struct ModelIDImpl {
 impl ModelIDInterface<'_> for ModelIDImpl {
     fn value(&self) -> String {
         format!("{}", self.id)
+    }
+}
+
+impl From<u64> for ModelIDImpl {
+    fn from(n: u64) -> Self {
+        ModelIDImpl::new(n)
     }
 }
 
@@ -50,14 +54,10 @@ impl QuestionSetInterface<'_> for QuestionSetImpl {
         &self.name
     }
 
-    fn with_id(name: String, id: ModelIDImpl) -> Self {
-        QuestionSetImpl { name, id }
-    }
-
-    fn with_name(name: String) -> Self {
+    fn new<ID: Into<ModelIDImpl>>(id: ID, name: String) -> Self {
         QuestionSetImpl {
+            id: id.into(),
             name,
-            id: ModelIDImpl::new(0),
         }
     }
 }
