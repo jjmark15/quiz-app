@@ -2,12 +2,6 @@ use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
-pub trait ModelIDInterface<'a>:
-    Eq + PartialEq + Deserialize<'a> + Serialize + Clone + Debug
-{
-    fn value(&self) -> String;
-}
-
 pub trait QuestionSetInterface<'a>: Debug + Deserialize<'a> + Serialize + Clone {
     fn id(&self) -> &ModelIDImpl;
 
@@ -21,12 +15,6 @@ pub struct ModelIDImpl {
     id: u64,
 }
 
-impl ModelIDInterface<'_> for ModelIDImpl {
-    fn value(&self) -> String {
-        format!("{}", self.id)
-    }
-}
-
 impl From<u64> for ModelIDImpl {
     fn from(n: u64) -> Self {
         ModelIDImpl::new(n)
@@ -36,6 +24,10 @@ impl From<u64> for ModelIDImpl {
 impl ModelIDImpl {
     fn new(value: u64) -> Self {
         ModelIDImpl { id: value }
+    }
+
+    pub fn value(&self) -> String {
+        format!("{}", self.id)
     }
 }
 
