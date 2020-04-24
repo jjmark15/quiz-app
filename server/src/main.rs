@@ -1,10 +1,12 @@
 extern crate pretty_env_logger;
 
+use quiz_domain::models::quiz::question::QuestionSetImpl;
+use quiz_domain::services::quiz::QuizServiceImpl;
 use server::App;
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
     let app = App;
-    app.start().await;
+    app.start::<QuestionSetImpl, QuizServiceImpl>().await;
 }
