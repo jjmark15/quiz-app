@@ -1,3 +1,5 @@
+use std::str::from_utf8;
+
 use spectral::prelude::*;
 use warp::http::method::Method;
 use warp::http::StatusCode;
@@ -8,7 +10,7 @@ use crate::common::{
 };
 
 #[tokio::test]
-async fn accept_header_with_valid_api_version_returns_ok() {
+async fn accepts_accept_header_with_valid_api_version() {
     let api = routes_under_test();
 
     let resp = request()
@@ -27,7 +29,7 @@ async fn accept_header_with_valid_api_version_returns_ok() {
 }
 
 #[tokio::test]
-async fn accept_header_with_invalid_api_version_returns_not_acceptable() {
+async fn refuses_accept_header_with_invalid_api_version() {
     let api = routes_under_test();
 
     let resp = request()
@@ -40,10 +42,16 @@ async fn accept_header_with_invalid_api_version_returns_not_acceptable() {
     asserting("returns NOT_ACCEPTABLE status code")
         .that(&resp.status())
         .is_equal_to(StatusCode::NOT_ACCEPTABLE);
+
+    let body: String = from_utf8(resp.body()).unwrap().to_string();
+
+    asserting("body describes api version validation error")
+        .that(&body)
+        .contains("\"message\":\"could not find an api version in accept header\"")
 }
 
 #[tokio::test]
-async fn accept_header_with_incorrect_api_version_returns_not_acceptable() {
+async fn refuses_accept_header_with_incorrect_api_version() {
     let api = routes_under_test();
 
     let resp = request()
@@ -56,6 +64,12 @@ async fn accept_header_with_incorrect_api_version_returns_not_acceptable() {
     asserting("returns NOT_ACCEPTABLE status code")
         .that(&resp.status())
         .is_equal_to(StatusCode::NOT_ACCEPTABLE);
+
+    let body: String = from_utf8(resp.body()).unwrap().to_string();
+
+    asserting("body describes api version validation error")
+        .that(&body)
+        .contains("message\":\"api version 2500 is incorrect\"")
 }
 
 #[tokio::test]
