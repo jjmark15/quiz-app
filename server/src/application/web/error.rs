@@ -38,10 +38,7 @@ pub(crate) trait WebError: ApplicationError {
     fn http_status_code(&self) -> warp::http::StatusCode;
 
     fn error_message(&self) -> ErrorMessage {
-        ErrorMessage::new(
-            self.http_status_code().as_u16(),
-            ApplicationError::description(self),
-        )
+        ErrorMessage::new(self.http_status_code().as_u16(), format!("{}", self))
     }
 
     fn error_response(&self) -> ErrorResponse {

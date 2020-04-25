@@ -1,7 +1,6 @@
-use core::fmt;
-use std::fmt::{Display, Formatter};
 use std::num::ParseIntError;
 
+use thiserror::Error;
 use warp::http::StatusCode;
 use warp::reject::Reject;
 
@@ -10,25 +9,14 @@ use crate::application::error::ApplicationError;
 use crate::application::logging;
 use crate::application::logging::{LogEntry, LogEntryKVP};
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Error)]
 pub(crate) enum ApiValidationError {
+    #[error("could not find an api version in accept header")]
     MissingMatch,
-    UnableToParse(ParseIntError),
+    #[error("api version could not be parsed as {0}")]
+    UnableToParse(#[from] ParseIntError),
+    #[error("api version {} is incorrect", .0.version())]
     WrongApiVersion(ApiVersion),
-}
-
-impl From<ParseIntError> for ApiValidationError {
-    fn from(p: ParseIntError) -> Self {
-        ApiValidationError::UnableToParse(p)
-    }
-}
-
-impl std::error::Error for ApiValidationError {}
-
-impl Display for ApiValidationError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        ApplicationError::description(self).fmt(f)
-    }
 }
 
 impl Reject for ApiValidationError {}
@@ -39,27 +27,13 @@ impl crate::application::web::error::WebError for ApiValidationError {
     }
 }
 
-impl ApplicationError for ApiValidationError {
-    fn description(&self) -> String {
-        match self {
-            ApiValidationError::MissingMatch => {
-                "could not find an api version in accept header".to_string()
-            }
-            ApiValidationError::UnableToParse(p) => {
-                format!("api version could not be parsed as {}", p)
-            }
-            ApiValidationError::WrongApiVersion(v) => {
-                format!("api version {} is incorrect", v.version())
-            }
-        }
-    }
-}
+impl ApplicationError for ApiValidationError {}
 
 impl LogEntry for ApiValidationError {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {
         vec![
             logging::LogEntryKVP::new("type", "error"),
-            logging::LogEntryKVP::new("message", ApplicationError::description(self)),
+            logging::LogEntryKVP::new("message", format!("{}", self)),
         ]
     }
 }

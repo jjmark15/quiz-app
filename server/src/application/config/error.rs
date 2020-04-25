@@ -1,18 +1,19 @@
-use std::fmt;
-use std::fmt::Display;
-
-use serde::export::Formatter;
+use thiserror::Error;
 use warp::http::StatusCode;
 
 use crate::application::error::ApplicationError;
 use crate::application::logging::LogEntryKVP;
 use crate::application::web::error::WebError;
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub(crate) enum Error {
+    #[error("received invalid application profile string: {0}")]
     InvalidApplicationProfile(String),
+    #[error("application profile environment variable is not set")]
     ApplicationProfileEnvNotSet,
+    #[error("received invalid environment variable override")]
     InvalidValueOverride,
+    #[error("value override environment variable is not set")]
     ValueOverrideEnvNotSet,
 }
 
@@ -22,38 +23,13 @@ impl WebError for Error {
     }
 }
 
-impl ApplicationError for Error {
-    fn description(&self) -> String {
-        match self {
-            Error::InvalidApplicationProfile(p) => {
-                format!("received invalid application profile string: {}", p)
-            }
-            Error::ApplicationProfileEnvNotSet => {
-                String::from("application profile environment variable is not set")
-            }
-            Error::InvalidValueOverride => {
-                String::from("received invalid environment variable override")
-            }
-            Error::ValueOverrideEnvNotSet => {
-                String::from("value override environment variable is not set")
-            }
-        }
-    }
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        self.description().fmt(f)
-    }
-}
+impl ApplicationError for Error {}
 
 impl crate::application::logging::LogEntry for Error {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {
         vec![
             LogEntryKVP::new("type", "error"),
-            LogEntryKVP::new("description", self.description()),
+            LogEntryKVP::new("description", format!("{}", self)),
         ]
     }
 }
-
-impl std::error::Error for Error {}
