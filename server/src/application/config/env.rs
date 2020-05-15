@@ -3,7 +3,6 @@ use std::env::VarError;
 use std::fmt::Debug;
 use std::str::FromStr;
 
-use log;
 #[cfg(test)]
 use mockall::automock;
 
