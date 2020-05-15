@@ -1,19 +1,16 @@
 use std::str::from_utf8;
 
 use spectral::prelude::*;
-use warp::http::method::Method;
 use warp::http::StatusCode;
-use warp::test::request;
 
-use crate::common::web::{default_application_accept_header, routes_under_test, Endpoint};
+use crate::common::web::requests::get_hello_world_greeting;
+use crate::common::web::{default_application_accept_header, routes_under_test};
 
 #[tokio::test]
 async fn accepts_accept_header_with_valid_api_version() {
     let api = routes_under_test();
 
-    let resp = request()
-        .method(Method::GET.as_str())
-        .path(Endpoint::HelloWorldGreeting.path_string().as_ref())
+    let resp = get_hello_world_greeting()
         .header(
             "accept",
             format!("{}+text", default_application_accept_header()),
@@ -30,9 +27,7 @@ async fn accepts_accept_header_with_valid_api_version() {
 async fn refuses_accept_header_with_invalid_api_version() {
     let api = routes_under_test();
 
-    let resp = request()
-        .method(Method::GET.as_str())
-        .path(Endpoint::HelloWorldGreeting.path_string().as_ref())
+    let resp = get_hello_world_greeting()
         .header("accept", "application/vnd.warpj.vinvalid+text")
         .reply(&api)
         .await;
@@ -52,9 +47,7 @@ async fn refuses_accept_header_with_invalid_api_version() {
 async fn refuses_accept_header_with_incorrect_api_version() {
     let api = routes_under_test();
 
-    let resp = request()
-        .method(Method::GET.as_str())
-        .path(Endpoint::HelloWorldGreeting.path_string().as_ref())
+    let resp = get_hello_world_greeting()
         .header("accept", "application/vnd.warpj.v2500+text")
         .reply(&api)
         .await;
@@ -74,11 +67,7 @@ async fn refuses_accept_header_with_incorrect_api_version() {
 async fn validation_is_skipped_if_accept_header_is_not_present() {
     let api = routes_under_test();
 
-    let resp = request()
-        .method(Method::GET.as_str())
-        .path(Endpoint::HelloWorldGreeting.path_string().as_ref())
-        .reply(&api)
-        .await;
+    let resp = get_hello_world_greeting().reply(&api).await;
 
     asserting("returns OK status code")
         .that(&resp.status())
@@ -89,9 +78,7 @@ async fn validation_is_skipped_if_accept_header_is_not_present() {
 async fn validation_is_skipped_if_client_accepts_any_content_type() {
     let api = routes_under_test();
 
-    let resp = request()
-        .method(Method::GET.as_str())
-        .path(Endpoint::HelloWorldGreeting.path_string().as_ref())
+    let resp = get_hello_world_greeting()
         .header("accept", "*/*")
         .reply(&api)
         .await;

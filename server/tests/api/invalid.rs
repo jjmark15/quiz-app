@@ -1,7 +1,8 @@
 use spectral::prelude::*;
 use warp::http::{Method, StatusCode};
 
-use crate::common::web::{default_request_builder, routes_under_test, Endpoint};
+use crate::common::web::requests::default_request_builder;
+use crate::common::web::{routes_under_test, Endpoint};
 
 #[tokio::test]
 async fn request_to_invalid_route_returns_not_found_error() {
