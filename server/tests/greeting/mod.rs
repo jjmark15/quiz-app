@@ -4,7 +4,7 @@ use spectral::prelude::*;
 use warp::http::method::Method;
 use warp::http::StatusCode;
 
-use crate::common::{default_request_builder, get_request_endpoint_string, routes_under_test};
+use crate::common::web::{default_request_builder, routes_under_test, Endpoint};
 
 #[tokio::test]
 async fn hello_world() {
@@ -12,7 +12,7 @@ async fn hello_world() {
 
     let resp = default_request_builder()
         .method(Method::GET.as_str())
-        .path(get_request_endpoint_string("/greeting/hello").as_ref())
+        .path(Endpoint::HelloWorldGreeting.path_string().as_ref())
         .reply(&api)
         .await;
 
@@ -33,7 +33,11 @@ async fn hello_person() {
 
     let resp = default_request_builder()
         .method(Method::GET.as_str())
-        .path(get_request_endpoint_string("/greeting/hello/Joshua").as_ref())
+        .path(
+            Endpoint::HelloNameGreeting("Joshua".to_string())
+                .path_string()
+                .as_ref(),
+        )
         .reply(&api)
         .await;
 

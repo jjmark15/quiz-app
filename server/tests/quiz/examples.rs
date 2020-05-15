@@ -4,7 +4,7 @@ use spectral::prelude::*;
 use warp::http::method::Method;
 use warp::http::StatusCode;
 
-use crate::common::{default_request_builder, get_request_endpoint_string, routes_under_test};
+use crate::common::web::{default_request_builder, routes_under_test, Endpoint};
 
 #[tokio::test]
 async fn gives_example_question_set() {
@@ -12,7 +12,7 @@ async fn gives_example_question_set() {
 
     let resp = default_request_builder()
         .method(Method::GET.as_str())
-        .path(get_request_endpoint_string("/quiz/question/set/example").as_ref())
+        .path(Endpoint::ExampleQuizQuestionSet.path_string().as_ref())
         .reply(&api)
         .await;
 

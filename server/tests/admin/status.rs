@@ -5,7 +5,7 @@ use warp::http::method::Method;
 use warp::http::StatusCode;
 use warp::test::request;
 
-use crate::common::routes_under_test;
+use crate::common::web::{routes_under_test, Endpoint};
 
 #[tokio::test]
 async fn returns_ok_status_and_body_when_up() {
@@ -13,7 +13,7 @@ async fn returns_ok_status_and_body_when_up() {
 
     let resp = request()
         .method(Method::GET.as_str())
-        .path("/admin/status")
+        .path(Endpoint::ApplicationStatus.path_string().as_str())
         .reply(&api)
         .await;
 

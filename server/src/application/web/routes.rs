@@ -9,7 +9,7 @@ use crate::application::web::rejection::handle_rejection;
 pub fn routes<
     QuestionSet: 'static + QuestionSetInterface<'static>,
     QuizService: 'static + QuizServiceInterface<'static, QuestionSet>,
->() -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
+>() -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
     api_filters::<QuestionSet, QuizService>()
         .or(admin::admin_filters())
         .recover(handle_rejection)
