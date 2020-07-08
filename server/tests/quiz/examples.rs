@@ -1,24 +1,32 @@
-use std::str::from_utf8;
-
+use crate::common::web::requests::get_request_url;
+use crate::common::{state::TestState, web::Endpoint};
+use http::StatusCode;
+use serde::Deserialize;
 use spectral::prelude::*;
-use warp::http::StatusCode;
-
-use crate::common::web::requests::get_example_question_set;
-use crate::common::web::routes_under_test;
 
 #[tokio::test]
 async fn gives_example_question_set() {
-    let api = routes_under_test();
+    let mut state: TestState = TestState::default();
+    let url: String = get_request_url("http://localhost:3030", Endpoint::ExampleQuizQuestionSet);
 
-    let resp = get_example_question_set().reply(&api).await;
+    state.request_builder().with_url(url).send().await.unwrap();
+
+    let resp = state.request_builder().response().as_ref().unwrap();
 
     asserting("returns OK status code")
-        .that(&resp.status())
+        .that(resp.status())
         .is_equal_to(StatusCode::OK);
 
-    let body: String = from_utf8(resp.body()).unwrap().to_string();
-
     asserting("json response body is an example question set")
-        .that(&body)
-        .is_equal_to("{\"id\":\"0\",\"name\":\"Example question set title\"}".to_string())
+        .that(&resp.json().await.unwrap())
+        .is_equal_to(QuestionSet {
+            id: "0".to_string(),
+            name: "Example question set title".to_string(),
+        });
+}
+
+#[derive(Debug, Deserialize, Eq, PartialEq)]
+struct QuestionSet {
+    id: String,
+    name: String,
 }

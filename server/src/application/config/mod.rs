@@ -1,7 +1,6 @@
 use std::str::FromStr;
 
 use getset::MutGetters;
-use log;
 
 use env::EnvReader;
 use error::Error as ConfigError;

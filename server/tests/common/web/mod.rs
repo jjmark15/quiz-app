@@ -1,9 +1,4 @@
 use pkg_version::pkg_version_major;
-use warp::Filter;
-
-use quiz_domain::models::quiz::question::QuestionSetImpl;
-use quiz_domain::services::quiz::QuizServiceImpl;
-use server::routes;
 
 pub(crate) mod requests;
 
@@ -29,9 +24,4 @@ impl Endpoint {
 
 pub(crate) fn default_application_accept_header() -> String {
     format!("application/vnd.warpj.v{}", pkg_version_major!())
-}
-
-pub(crate) fn routes_under_test(
-) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone {
-    routes::<QuestionSetImpl, QuizServiceImpl>()
 }

@@ -1,20 +1,19 @@
 use spectral::prelude::*;
-use warp::http::{Method, StatusCode};
 
-use crate::common::web::requests::default_request_builder;
-use crate::common::web::{routes_under_test, Endpoint};
+use crate::common::web::requests::get_request_url;
+use crate::common::{state::TestState, web::Endpoint};
+use http::StatusCode;
 
 #[tokio::test]
 async fn request_to_invalid_route_returns_not_found_error() {
-    let api = routes_under_test();
+    let mut state: TestState = TestState::default();
+    let url: String = get_request_url("http://localhost:3030", Endpoint::Invalid);
 
-    let resp = default_request_builder()
-        .method(Method::GET.as_str())
-        .path(Endpoint::Invalid.path_string().as_ref())
-        .reply(&api)
-        .await;
+    state.request_builder().with_url(url).send().await.unwrap();
+
+    let resp = state.request_builder().response().as_ref().unwrap();
 
     asserting("returns NOT_FOUND status code")
-        .that(&resp.status())
+        .that(resp.status())
         .is_equal_to(StatusCode::NOT_FOUND);
 }

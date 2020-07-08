@@ -1,43 +1,48 @@
-use std::str::from_utf8;
-
+use crate::common::web::requests::get_request_url;
 use spectral::prelude::*;
-use warp::http::StatusCode;
 
-use crate::common::web::requests::{get_hello_name_greeting, get_hello_world_greeting};
-use crate::common::web::routes_under_test;
+use crate::common::{state::TestState, web::Endpoint};
+use http::StatusCode;
 
 #[tokio::test]
 async fn hello_world() {
-    let api = routes_under_test();
+    let mut state: TestState = TestState::default();
+    let url: String = get_request_url("http://localhost:3030", Endpoint::HelloWorldGreeting);
 
-    let resp = get_hello_world_greeting().reply(&api).await;
+    state.request_builder().with_url(url).send().await.unwrap();
+
+    let resp = state.request_builder().response().as_ref().unwrap();
 
     asserting("returns OK status code")
-        .that(&resp.status())
+        .that(resp.status())
         .is_equal_to(StatusCode::OK);
 
-    let body: String = from_utf8(resp.body()).unwrap().to_string();
+    let body: String = resp.body().to_string();
 
     asserting("body contains hello world greeting")
         .that(&body)
-        .starts_with("Hello, World!")
+        .is_equal_to("Hello, World!".to_string())
 }
 
 #[tokio::test]
 async fn hello_person() {
-    let api = routes_under_test();
+    let mut state: TestState = TestState::default();
+    let url: String = get_request_url(
+        "http://localhost:3030",
+        Endpoint::HelloNameGreeting("Joshua".to_string()),
+    );
 
-    let resp = get_hello_name_greeting("Joshua".to_string())
-        .reply(&api)
-        .await;
+    state.request_builder().with_url(url).send().await.unwrap();
+
+    let resp = state.request_builder().response().as_ref().unwrap();
 
     asserting("returns OK status code")
-        .that(&resp.status())
+        .that(resp.status())
         .is_equal_to(StatusCode::OK);
 
-    let body: String = from_utf8(resp.body()).unwrap().to_string();
+    let body: String = resp.body().to_string();
 
     asserting("body contains hello person greeting")
         .that(&body)
-        .starts_with("Hello, Joshua!")
+        .is_equal_to("Hello, Joshua!".to_string())
 }
