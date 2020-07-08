@@ -4,24 +4,48 @@ use quiz_domain::services::quiz::QuizServiceInterface;
 use crate::application::config::env::EnvReaderImpl;
 use crate::application::config::ApplicationConfig;
 use crate::application::web::routes;
+use std::net::{Ipv4Addr, SocketAddr};
+use warp::Future;
 
 mod config;
 mod error;
 mod logging;
 pub(crate) mod web;
 
-pub struct App;
+#[derive(Debug, Clone)]
+pub struct App {
+    socket_address: SocketAddr,
+}
 
 impl App {
-    pub async fn start<
+    pub fn new<QuestionSet, QuizService>() -> (Self, impl Future<Output = ()> + 'static)
+    where
         QuestionSet: 'static + QuestionSetInterface<'static>,
         QuizService: 'static + QuizServiceInterface<'static, QuestionSet>,
-    >(
-        &self,
-    ) {
+    {
         let mut config = ApplicationConfig::from_env(&EnvReaderImpl);
-        warp::serve(routes::routes::<QuestionSet, QuizService>())
-            .run(([0, 0, 0, 0], config.web_mut().port()))
-            .await;
+        let port: u16 = config.web_mut().port();
+        Self::from_port::<QuestionSet, QuizService>(port)
     }
+
+    pub fn from_port<QuestionSet, QuizService>(
+        port: u16,
+    ) -> (Self, impl Future<Output = ()> + 'static)
+    where
+        QuestionSet: 'static + QuestionSetInterface<'static>,
+        QuizService: 'static + QuizServiceInterface<'static, QuestionSet>,
+    {
+        let intended_socket_address = socket_address_from_port(port);
+        let (socket_address, future) = warp::serve(routes::routes::<QuestionSet, QuizService>())
+            .bind_ephemeral(intended_socket_address);
+        (App { socket_address }, future)
+    }
+
+    pub fn socket_address(&self) -> SocketAddr {
+        self.socket_address.clone()
+    }
+}
+
+fn socket_address_from_port(port: u16) -> SocketAddr {
+    SocketAddr::new(std::net::IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), port)
 }

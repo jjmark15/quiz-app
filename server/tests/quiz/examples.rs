@@ -7,7 +7,10 @@ use spectral::prelude::*;
 #[tokio::test]
 async fn gives_example_question_set() {
     let mut state: TestState = TestState::default();
-    let url: String = get_request_url("http://localhost:3030", Endpoint::ExampleQuizQuestionSet);
+    let url: String = get_request_url(
+        state.server_http_address(),
+        Endpoint::ExampleQuizQuestionSet,
+    );
 
     state.request_builder().with_url(url).send().await.unwrap();
 

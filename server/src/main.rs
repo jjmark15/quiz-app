@@ -7,6 +7,6 @@ use server::App;
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
-    let app = App;
-    app.start::<QuestionSetImpl, QuizServiceImpl>().await;
+    let (_app, future) = App::new::<QuestionSetImpl, QuizServiceImpl>();
+    future.await;
 }

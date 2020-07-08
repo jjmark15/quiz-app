@@ -7,7 +7,7 @@ use http::StatusCode;
 #[tokio::test]
 async fn request_to_invalid_route_returns_not_found_error() {
     let mut state: TestState = TestState::default();
-    let url: String = get_request_url("http://localhost:3030", Endpoint::Invalid);
+    let url: String = get_request_url(state.server_http_address(), Endpoint::Invalid);
 
     state.request_builder().with_url(url).send().await.unwrap();
 
