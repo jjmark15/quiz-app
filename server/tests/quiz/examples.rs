@@ -23,7 +23,7 @@ async fn gives_example_question_set() {
     asserting("json response body is an example question set")
         .that(&resp.json().await.unwrap())
         .is_equal_to(QuestionSet {
-            id: "0".to_string(),
+            id: "00000000-0000-0000-0000-000000000000".to_string(),
             name: "Example question set title".to_string(),
         });
 }

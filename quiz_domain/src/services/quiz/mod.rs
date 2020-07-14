@@ -1,8 +1,15 @@
-use crate::models::quiz::question::{QuestionSetImpl, QuestionSetInterface};
+use crate::models::quiz::question::{ModelID, QuestionSetImpl, QuestionSetInterface};
 
-pub trait QuizServiceInterface<'a, QuestionSet: QuestionSetInterface<'a>> {
+pub trait QuizServiceInterface<'a, QuestionSet>
+where
+    QuestionSet: QuestionSetInterface<'a>,
+    QuestionSet::ID: ModelID<'a>,
+{
     fn get_example_question_set() -> QuestionSet {
-        QuestionSet::new(0, "Example question set title".to_string())
+        QuestionSet::with_id(
+            QuestionSet::ID::default(),
+            "Example question set title".to_string(),
+        )
     }
 }
 

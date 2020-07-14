@@ -1,33 +1,51 @@
 use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
-pub trait QuestionSetInterface<'a>: Debug + Deserialize<'a> + Serialize + Clone {
-    fn id(&self) -> &ModelIDImpl;
+pub trait ModelID<'a>: Eq + Deserialize<'a> + Serialize + Clone + Debug + Default {
+    fn value(&self) -> uuid::Uuid;
 
-    fn name(&self) -> &String;
+    fn new(value: uuid::Uuid) -> Self;
 
-    fn new<ID: Into<ModelIDImpl>>(id: ID, name: String) -> Self;
+    fn random() -> Self;
 }
 
 #[derive(Eq, PartialEq, Deserialize, Serialize, Clone, Debug)]
 pub struct ModelIDImpl {
-    id: u64,
+    id: uuid::Uuid,
 }
 
-impl From<u64> for ModelIDImpl {
-    fn from(n: u64) -> Self {
-        ModelIDImpl::new(n)
+impl ModelID<'_> for ModelIDImpl {
+    fn value(&self) -> uuid::Uuid {
+        self.id
     }
-}
-
-impl ModelIDImpl {
-    fn new(value: u64) -> Self {
+    fn new(value: uuid::Uuid) -> Self {
         ModelIDImpl { id: value }
     }
 
-    pub fn value(&self) -> String {
-        format!("{}", self.id)
+    fn random() -> Self {
+        ModelIDImpl::new(uuid::Uuid::new_v4())
+    }
+}
+
+impl Default for ModelIDImpl {
+    fn default() -> Self {
+        ModelIDImpl::new(uuid::Uuid::from_str("00000000-0000-0000-0000-000000000000").unwrap())
+    }
+}
+
+pub trait QuestionSetInterface<'a>: Debug + Deserialize<'a> + Serialize + Clone {
+    type ID: ModelID<'a>;
+
+    fn id(&self) -> Self::ID;
+
+    fn name(&self) -> &String;
+
+    fn with_id<ID: Into<Self::ID>>(id: ID, name: String) -> Self;
+
+    fn new(name: String) -> Self {
+        Self::with_id(Self::ID::random(), name)
     }
 }
 
@@ -38,15 +56,17 @@ pub struct QuestionSetImpl {
 }
 
 impl QuestionSetInterface<'_> for QuestionSetImpl {
-    fn id(&self) -> &ModelIDImpl {
-        &self.id
+    type ID = ModelIDImpl;
+
+    fn id(&self) -> Self::ID {
+        self.id.clone()
     }
 
     fn name(&self) -> &String {
         &self.name
     }
 
-    fn new<ID: Into<ModelIDImpl>>(id: ID, name: String) -> Self {
+    fn with_id<ID: Into<ModelIDImpl>>(id: ID, name: String) -> Self {
         QuestionSetImpl {
             id: id.into(),
             name,

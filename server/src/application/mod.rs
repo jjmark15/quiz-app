@@ -1,4 +1,4 @@
-use quiz_domain::models::quiz::question::QuestionSetInterface;
+use quiz_domain::models::quiz::question::{ModelID, QuestionSetInterface};
 use quiz_domain::services::quiz::QuizServiceInterface;
 
 use crate::application::config::env::EnvReaderImpl;
@@ -18,26 +18,30 @@ pub struct App {
 }
 
 impl App {
-    pub fn new<QuestionSet, QuizService>() -> (Self, impl Future<Output = ()> + 'static)
+    pub fn new<'a, QuestionSet, QuizService>() -> (Self, impl Future<Output = ()> + 'a)
     where
-        QuestionSet: 'static + QuestionSetInterface<'static>,
-        QuizService: 'static + QuizServiceInterface<'static, QuestionSet>,
+        'a: 'static,
+        QuestionSet: 'a + QuestionSetInterface<'a>,
+        QuestionSet::ID: ModelID<'a>,
+        QuizService: 'a + QuizServiceInterface<'a, QuestionSet>,
     {
         let mut config = ApplicationConfig::from_env(&EnvReaderImpl);
         let port: u16 = config.web_mut().port();
-        Self::from_ip_and_port::<QuestionSet, QuizService>(IpAddr::V4(Ipv4Addr::UNSPECIFIED), port)
+        Self::from_ip_and_port::<'a, QuestionSet, QuizService>(IpAddr::V4(Ipv4Addr::UNSPECIFIED), port)
     }
 
-    pub fn from_ip_and_port<QuestionSet, QuizService>(
+    pub fn from_ip_and_port<'a, QuestionSet, QuizService>(
         ip_address: IpAddr,
         port: u16,
-    ) -> (Self, impl Future<Output = ()> + 'static)
+    ) -> (Self, impl Future<Output = ()> + 'a)
     where
-        QuestionSet: 'static + QuestionSetInterface<'static>,
-        QuizService: 'static + QuizServiceInterface<'static, QuestionSet>,
+        'a: 'static,
+        QuestionSet: 'a + QuestionSetInterface<'a>,
+        QuestionSet::ID: ModelID<'a>,
+        QuizService: 'a + QuizServiceInterface<'a, QuestionSet>,
     {
         let intended_socket_address = socket_address_from_ip_and_port(ip_address, port);
-        let (socket_address, future) = warp::serve(routes::routes::<QuestionSet, QuizService>())
+        let (socket_address, future) = warp::serve(routes::routes::<'a, QuestionSet, QuizService>())
             .bind_ephemeral(intended_socket_address);
         (App { socket_address }, future)
     }
