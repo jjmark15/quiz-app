@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use warp::reply::Response;
 
-use quiz_domain::models::quiz::question::{ModelID, QuestionSetInterface};
+use quiz_domain::models::quiz::{ModelID, QuestionSetInterface};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct QuestionSetReply {

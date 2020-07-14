@@ -1,1 +1,3 @@
-pub mod question;
+mod question;
+
+pub use question::*;

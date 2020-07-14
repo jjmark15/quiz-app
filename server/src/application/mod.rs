@@ -1,4 +1,4 @@
-use quiz_domain::models::quiz::question::{ModelID, QuestionSetInterface};
+use quiz_domain::models::quiz::{ModelID, QuestionSetInterface};
 use quiz_domain::services::quiz::QuizServiceInterface;
 
 use crate::application::config::env::EnvReaderImpl;
@@ -27,7 +27,10 @@ impl App {
     {
         let mut config = ApplicationConfig::from_env(&EnvReaderImpl);
         let port: u16 = config.web_mut().port();
-        Self::from_ip_and_port::<'a, QuestionSet, QuizService>(IpAddr::V4(Ipv4Addr::UNSPECIFIED), port)
+        Self::from_ip_and_port::<'a, QuestionSet, QuizService>(
+            IpAddr::V4(Ipv4Addr::UNSPECIFIED),
+            port,
+        )
     }
 
     pub fn from_ip_and_port<'a, QuestionSet, QuizService>(
@@ -41,8 +44,9 @@ impl App {
         QuizService: 'a + QuizServiceInterface<'a, QuestionSet>,
     {
         let intended_socket_address = socket_address_from_ip_and_port(ip_address, port);
-        let (socket_address, future) = warp::serve(routes::routes::<'a, QuestionSet, QuizService>())
-            .bind_ephemeral(intended_socket_address);
+        let (socket_address, future) =
+            warp::serve(routes::routes::<'a, QuestionSet, QuizService>())
+                .bind_ephemeral(intended_socket_address);
         (App { socket_address }, future)
     }
 

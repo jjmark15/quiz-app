@@ -1,6 +1,6 @@
 use warp::Filter;
 
-use quiz_domain::models::quiz::question::{ModelID, QuestionSetInterface};
+use quiz_domain::models::quiz::{ModelID, QuestionSetInterface};
 use quiz_domain::services::quiz::QuizServiceInterface;
 
 use crate::application::web::handlers::quiz;
