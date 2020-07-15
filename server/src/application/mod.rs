@@ -8,7 +8,6 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use warp::Future;
 
 mod config;
-mod error;
 mod logging;
 pub(crate) mod web;
 

@@ -1,40 +1,19 @@
-use serde::Serialize;
-use warp::reply::Json;
 use warp::Reply;
 
-use crate::application::error::ApplicationError;
 use crate::application::logging::{LogEntry, LogEntryKVP};
-use crate::application::web::response::ErrorResponse;
-
-#[derive(Serialize)]
-pub(crate) struct ErrorMessage {
-    code: u16,
-    message: String,
-}
-
-impl ErrorMessage {
-    pub(crate) fn new(code: u16, message: String) -> ErrorMessage {
-        ErrorMessage { code, message }
-    }
-}
-
-impl Into<warp::reply::Json> for ErrorMessage {
-    fn into(self) -> Json {
-        warp::reply::json(&self)
-    }
-}
+use crate::application::web::response::{ErrorMessage, ErrorResponse};
 
 impl LogEntry for ErrorMessage {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {
         vec![
             LogEntryKVP::new("type", "rejection"),
-            LogEntryKVP::new("code", format!("{}", self.code)),
-            LogEntryKVP::new("message", &self.message),
+            LogEntryKVP::new("code", format!("{}", self.code())),
+            LogEntryKVP::new("message", self.message()),
         ]
     }
 }
 
-pub(crate) trait WebError: ApplicationError {
+pub(crate) trait WebErrorResponse: std::error::Error {
     fn http_status_code(&self) -> warp::http::StatusCode;
 
     fn error_message(&self) -> ErrorMessage {

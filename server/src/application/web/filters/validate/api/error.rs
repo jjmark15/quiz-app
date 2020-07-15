@@ -5,9 +5,9 @@ use warp::http::StatusCode;
 use warp::reject::Reject;
 
 use crate::application::config::version::ApiVersion;
-use crate::application::error::ApplicationError;
 use crate::application::logging;
 use crate::application::logging::{LogEntry, LogEntryKVP};
+use crate::application::web::error::WebErrorResponse;
 
 #[derive(Debug, Eq, PartialEq, Error)]
 pub(crate) enum ApiValidationError {
@@ -21,13 +21,11 @@ pub(crate) enum ApiValidationError {
 
 impl Reject for ApiValidationError {}
 
-impl crate::application::web::error::WebError for ApiValidationError {
+impl WebErrorResponse for ApiValidationError {
     fn http_status_code(&self) -> StatusCode {
         StatusCode::NOT_ACCEPTABLE
     }
 }
-
-impl ApplicationError for ApiValidationError {}
 
 impl LogEntry for ApiValidationError {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {

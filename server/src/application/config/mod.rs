@@ -3,7 +3,7 @@ use std::str::FromStr;
 use getset::MutGetters;
 
 use env::EnvReader;
-use error::Error as ConfigError;
+pub(crate) use error::ConfigError;
 use web::WebConfig;
 
 use crate::application::logging::log_string;

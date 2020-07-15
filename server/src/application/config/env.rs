@@ -6,7 +6,7 @@ use std::str::FromStr;
 #[cfg(test)]
 use mockall::automock;
 
-use crate::application::config::error::Error;
+use crate::application::config::error::ConfigError;
 use crate::application::logging::log_string;
 
 #[cfg_attr(test, automock)]
@@ -64,12 +64,12 @@ impl<'a, T: FromStr + Eq + PartialEq + Copy, Reader: EnvReader> Overrideable<'a,
                     v
                 }
                 Err(_e) => {
-                    log::warn!("{}", log_string(&Error::InvalidValueOverride));
+                    log::warn!("{}", log_string(&ConfigError::InvalidValueOverride));
                     self.default
                 }
             },
             Err(_e) => {
-                log::debug!("{}", log_string(&Error::ValueOverrideEnvNotSet));
+                log::debug!("{}", log_string(&ConfigError::ValueOverrideEnvNotSet));
                 self.default
             }
         }
