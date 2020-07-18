@@ -1449,8 +1449,10 @@ name = "server"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "cfg-if",
  "getset",
  "http",
+ "lazy_static",
  "log 0.4.11",
  "mockall",
  "pkg-version",

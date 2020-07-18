@@ -1,7 +1,7 @@
 use log::debug;
 use warp::{Filter, Rejection};
 
-use crate::application::config::version::ApiVersion;
+use crate::application::config::version::{ApiVersion, ApiVersionTrait};
 use crate::application::logging;
 use crate::application::web::accept_header::AcceptHeader;
 use crate::application::web::filters::validate::api::error::ApiValidationError;

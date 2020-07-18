@@ -2,7 +2,7 @@ use thiserror::Error;
 use warp::http::StatusCode;
 use warp::reject::Reject;
 
-use crate::application::config::version::ApiVersion;
+use crate::application::config::version::{ApiVersion, ApiVersionTrait};
 use crate::application::logging;
 use crate::application::logging::{LogEntry, LogEntryKVP};
 use crate::application::web::accept_header::ParseAcceptHeaderError;

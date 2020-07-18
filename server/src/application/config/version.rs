@@ -1,37 +1,53 @@
 use std::num::ParseIntError;
 use std::str::FromStr;
 
-#[cfg(not(test))]
-use pkg_version::pkg_version_major;
 use thiserror::Error;
 
-#[cfg(not(test))]
-const API_VERSION_LATEST: ApiVersion = ApiVersion {
-    version: pkg_version_major!(),
-};
-
 #[cfg(test)]
-const API_VERSION_LATEST: ApiVersion = ApiVersion { version: 1 };
+pub(crate) use mocks::{MockApiVersion, FROM_STR_MUTEX};
+
+cfg_if::cfg_if! {
+    if #[cfg(test)] {
+        const API_VERSION_LATEST: ApiVersion = ApiVersion { version: 1 };
+    } else {
+        use pkg_version::pkg_version_major;
+        const API_VERSION_LATEST: ApiVersion = ApiVersion {
+            version: pkg_version_major!(),
+        };
+    }
+}
+
+pub(crate) trait ApiVersionTrait:
+    Clone + PartialEq + Eq + FromStr<Err = ParseApiVersionError>
+{
+    fn latest() -> &'static ApiVersion;
+
+    fn version(&self) -> u32;
+
+    fn new(version: u32) -> ApiVersion;
+
+    fn is_latest(&self) -> bool;
+}
 
 #[derive(Eq, PartialEq, Debug, Default, Copy, Clone)]
 pub(crate) struct ApiVersion {
     version: u32,
 }
 
-impl ApiVersion {
-    pub(crate) fn latest() -> &'static ApiVersion {
+impl ApiVersionTrait for ApiVersion {
+    fn latest() -> &'static ApiVersion {
         &API_VERSION_LATEST
     }
 
-    pub(crate) fn version(&self) -> u32 {
+    fn version(&self) -> u32 {
         self.version
     }
 
-    pub(crate) fn new(version: u32) -> ApiVersion {
+    fn new(version: u32) -> ApiVersion {
         ApiVersion { version }
     }
 
-    pub(crate) fn is_latest(&self) -> bool {
+    fn is_latest(&self) -> bool {
         self.eq(ApiVersion::latest())
     }
 }
@@ -54,8 +70,60 @@ impl FromStr for ApiVersion {
 
 #[derive(Debug, Error, Eq, PartialEq)]
 pub(crate) enum ParseApiVersionError {
-    #[error("{0}")]
+    #[error(transparent)]
     ParseVersionIntError(#[from] ParseIntError),
+    #[cfg(test)]
+    #[error("test error")]
+    Testing,
+}
+
+#[cfg(test)]
+mod mocks {
+    use std::fmt::Debug;
+    use std::sync::Mutex;
+
+    use mockall::mock;
+    use mockall::predicate::*;
+
+    use super::*;
+
+    lazy_static! {
+        // required as static method mocks are global - see https://docs.rs/mockall/0.7.1/mockall/index.html?search=#static-methods
+        pub static ref FROM_STR_MUTEX: Mutex<()> = Mutex::new(());
+    }
+
+    mock! {
+        pub(crate) ApiVersion {}
+
+        trait ApiVersionTrait {
+            fn latest() -> &'static ApiVersion;
+
+            fn version(&self) -> u32;
+
+            fn new(version: u32) -> ApiVersion;
+
+            fn is_latest(&self) -> bool;
+        }
+
+        trait Clone {
+            fn clone(&self) -> Self;
+        }
+
+        trait PartialEq {
+            fn eq(&self, other: &MockApiVersion) -> bool;
+        }
+
+        trait Eq {}
+
+        trait FromStr {
+            type Err=ParseApiVersionError;
+            fn from_str(s: &str) -> Result<Self, ParseApiVersionError>;
+        }
+
+        trait Debug {
+            fn fmt<'a>(&self, f: &mut std::fmt::Formatter<'a>) -> std::fmt::Result;
+        }
+    }
 }
 
 #[cfg(test)]
