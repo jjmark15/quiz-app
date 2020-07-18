@@ -1,3 +1,4 @@
+pub(crate) mod accept_header;
 pub(crate) mod error;
 pub(crate) mod filters;
 pub(crate) mod handlers;
