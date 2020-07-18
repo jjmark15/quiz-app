@@ -1,7 +1,9 @@
-use regex::Regex;
+use std::str::FromStr;
 
-use crate::application::config::version::ApiVersion;
-use crate::application::web::filters::validate::api::error::ApiValidationError;
+use regex::Regex;
+use thiserror::Error;
+
+use crate::application::config::version::{ApiVersion, ParseApiVersionError};
 
 #[derive(Debug, Clone)]
 pub(crate) struct AcceptHeader {
@@ -15,7 +17,7 @@ impl AcceptHeader {
 
     pub(crate) fn parse<S: AsRef<str>>(
         accept_string: S,
-    ) -> Result<AcceptHeader, ApiValidationError> {
+    ) -> Result<AcceptHeader, ParseAcceptHeaderError> {
         let api_version = extract_api_version_from_accept_header(accept_string)?;
         Ok(AcceptHeader::new(api_version))
     }
@@ -27,21 +29,33 @@ impl AcceptHeader {
 
 fn extract_api_version_from_accept_header<T: AsRef<str>>(
     accept_header: T,
-) -> Result<ApiVersion, ApiValidationError> {
-    let re: Regex = Regex::new(r"(?i)application/vnd\.warpj\.(v\d+)\+?\w*").unwrap();
+) -> Result<ApiVersion, ParseAcceptHeaderError> {
+    let re: Regex = Regex::new(r"(?i)application/vnd\.warpj\.(v\d*)\+?\w*").unwrap();
     let result = re.captures(accept_header.as_ref());
 
     match result {
         Some(captures) => match captures.get(1) {
             Some(m) => {
                 let s = m.as_str();
-                let api_version = s.parse::<ApiVersion>()?;
+                let api_version = ApiVersion::from_str(s)?;
                 Ok(api_version)
             }
-            None => Err(ApiValidationError::MissingMatch),
+            None => Err(ParseAcceptHeaderError::MissingApiVersion),
         },
-        None => Err(ApiValidationError::MissingMatch),
+        None => Err(ParseAcceptHeaderError::Malformed(
+            accept_header.as_ref().to_string(),
+        )),
     }
+}
+
+#[derive(Debug, Eq, PartialEq, Error)]
+pub(crate) enum ParseAcceptHeaderError {
+    #[error("received malformed accept header \"{0}\"")]
+    Malformed(String),
+    #[error("missing api version in accept header")]
+    MissingApiVersion,
+    #[error("bad api version in accept header: {0}")]
+    BadApiVersion(#[from] ParseApiVersionError),
 }
 
 #[cfg(test)]
@@ -61,11 +75,11 @@ mod tests {
 
     #[test]
     fn errors_if_no_version_present() {
-        let header_string = "application/vnd.warpj.+text";
+        let header_string = "application/vnd.warpj.v+text";
 
         asserting("errors if no api version present")
             .that(&AcceptHeader::parse(header_string))
-            .is_err_containing(ApiValidationError::MissingMatch);
+            .is_err();
     }
 
     #[test]
@@ -74,7 +88,7 @@ mod tests {
 
         asserting("errors when parsing a malformed header string")
             .that(&AcceptHeader::parse(header_string))
-            .is_err_containing(ApiValidationError::MissingMatch);
+            .is_err_containing(ParseAcceptHeaderError::Malformed(header_string.to_string()));
     }
 
     #[test]
@@ -83,6 +97,6 @@ mod tests {
 
         asserting("errors when parsing a non-digit version string")
             .that(&AcceptHeader::parse(header_string))
-            .is_err_containing(ApiValidationError::MissingMatch);
+            .is_err();
     }
 }

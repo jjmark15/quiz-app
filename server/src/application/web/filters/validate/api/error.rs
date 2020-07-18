@@ -1,5 +1,3 @@
-use std::num::ParseIntError;
-
 use thiserror::Error;
 use warp::http::StatusCode;
 use warp::reject::Reject;
@@ -7,16 +5,15 @@ use warp::reject::Reject;
 use crate::application::config::version::ApiVersion;
 use crate::application::logging;
 use crate::application::logging::{LogEntry, LogEntryKVP};
+use crate::application::web::accept_header::ParseAcceptHeaderError;
 use crate::application::web::error::WebErrorResponse;
 
 #[derive(Debug, Eq, PartialEq, Error)]
 pub(crate) enum ApiValidationError {
-    #[error("could not find an api version in accept header")]
-    MissingMatch,
-    #[error("api version could not be parsed as {0}")]
-    UnableToParse(#[from] ParseIntError),
     #[error("api version {} is incorrect", .0.version())]
     WrongApiVersion(ApiVersion),
+    #[error(transparent)]
+    InvalidAcceptHeader(#[from] ParseAcceptHeaderError),
 }
 
 impl Reject for ApiValidationError {}

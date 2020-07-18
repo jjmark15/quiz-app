@@ -1,3 +1,4 @@
+use http::StatusCode;
 use spectral::prelude::*;
 
 use crate::common::web::requests::get_request_url;
@@ -5,7 +6,6 @@ use crate::common::{
     state::TestState,
     web::{default_application_accept_header, Endpoint},
 };
-use http::StatusCode;
 
 #[tokio::test]
 async fn accepts_accept_header_with_valid_api_version() {
@@ -56,7 +56,7 @@ async fn refuses_accept_header_with_invalid_api_version() {
 
     asserting("body describes api version validation error")
         .that(&body)
-        .contains("\"message\":\"could not find an api version in accept header\"")
+        .contains("\"message\":\"bad api version in accept header: cannot parse integer from empty string\"")
 }
 
 #[tokio::test]

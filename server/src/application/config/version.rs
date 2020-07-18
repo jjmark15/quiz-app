@@ -1,7 +1,9 @@
-#[cfg(not(test))]
-use pkg_version::pkg_version_major;
 use std::num::ParseIntError;
 use std::str::FromStr;
+
+#[cfg(not(test))]
+use pkg_version::pkg_version_major;
+use thiserror::Error;
 
 #[cfg(not(test))]
 const API_VERSION_LATEST: ApiVersion = ApiVersion {
@@ -41,13 +43,19 @@ impl From<u32> for ApiVersion {
 }
 
 impl FromStr for ApiVersion {
-    type Err = ParseIntError;
+    type Err = ParseApiVersionError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let without_v: &str = s.trim_start_matches('v');
         let number = without_v.parse::<u32>()?;
         Ok(ApiVersion::new(number))
     }
+}
+
+#[derive(Debug, Error, Eq, PartialEq)]
+pub(crate) enum ParseApiVersionError {
+    #[error("{0}")]
+    ParseVersionIntError(#[from] ParseIntError),
 }
 
 #[cfg(test)]
@@ -103,7 +111,7 @@ mod tests {
 
     #[test]
     fn parse_unsuccessfully_with_invalid_version() {
-        let res: Result<ApiVersion, ParseIntError> = ApiVersion::from_str("vwhoops");
+        let res: Result<ApiVersion, ParseApiVersionError> = ApiVersion::from_str("vwhoops");
         asserting("fails to parse an invalid version")
             .that(&res)
             .is_err();
@@ -111,7 +119,7 @@ mod tests {
 
     #[test]
     fn parse_unsuccessfully_with_signed_integer_value() {
-        let result: Result<ApiVersion, ParseIntError> = ApiVersion::from_str("v-1");
+        let result: Result<ApiVersion, ParseApiVersionError> = ApiVersion::from_str("v-1");
         asserting("fails to parse with a negative version number")
             .that(&result)
             .is_err();

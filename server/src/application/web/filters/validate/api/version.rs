@@ -23,7 +23,7 @@ async fn validate_api_version(optional_accept_string: Option<String>) -> Result<
                 }
                 Ok(())
             }
-            Err(err) => handle_failed_api_version_extraction(err),
+            Err(err) => handle_failed_api_version_extraction(err.into()),
         }
     } else {
         debug!("accept header is NOT present");
