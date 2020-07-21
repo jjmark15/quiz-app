@@ -10,7 +10,6 @@ use crate::application::logging::log_string;
 
 pub(crate) mod env;
 mod error;
-pub(crate) mod version;
 
 mod web;
 

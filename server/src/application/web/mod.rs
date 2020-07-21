@@ -5,3 +5,4 @@ pub(crate) mod handlers;
 pub(crate) mod rejection;
 pub(crate) mod response;
 pub mod routes;
+mod version;
