@@ -1,13 +1,12 @@
-use crate::models::quiz::{ModelID, QuestionSetImpl, QuestionSetInterface};
+use crate::models::quiz::{ModelID, ModelIDImpl, QuestionSetImpl, QuestionSetInterface};
 
-pub trait QuizServiceInterface<'a, QuestionSet>
-where
-    QuestionSet: QuestionSetInterface<'a>,
-    QuestionSet::ID: ModelID<'a>,
-{
-    fn get_example_question_set() -> QuestionSet {
-        QuestionSet::with_id(
-            QuestionSet::ID::default(),
+pub trait QuizServiceInterface<'a> {
+    type QuestionSetID: ModelID<'a>;
+    type QuestionSet: QuestionSetInterface<'a, ID = Self::QuestionSetID>;
+
+    fn get_example_question_set() -> Self::QuestionSet {
+        Self::QuestionSet::with_id(
+            Self::QuestionSetID::default(),
             "Example question set title".to_string(),
         )
     }
@@ -15,4 +14,7 @@ where
 
 pub struct QuizServiceImpl;
 
-impl QuizServiceInterface<'_, QuestionSetImpl> for QuizServiceImpl {}
+impl QuizServiceInterface<'_> for QuizServiceImpl {
+    type QuestionSetID = ModelIDImpl;
+    type QuestionSet = QuestionSetImpl;
+}

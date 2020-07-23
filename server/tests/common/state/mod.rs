@@ -1,8 +1,11 @@
-use crate::common::state::web::RequestBuilder;
-use quiz_domain::{models::quiz::QuestionSetImpl, services::quiz::QuizServiceImpl};
-use server::App;
 use std::net::{IpAddr, Ipv4Addr};
+
 use tokio::task::JoinHandle;
+
+use quiz_domain::services::quiz::QuizServiceImpl;
+use server::App;
+
+use crate::common::state::web::RequestBuilder;
 
 pub(crate) mod web;
 
@@ -19,10 +22,8 @@ impl TestState {
     }
 
     fn spawn_server_process() -> (JoinHandle<()>, App) {
-        let (app, future) = server::App::from_ip_and_port::<QuestionSetImpl, QuizServiceImpl>(
-            IpAddr::V4(Ipv4Addr::LOCALHOST),
-            0,
-        );
+        let (app, future) =
+            server::App::from_ip_and_port::<QuizServiceImpl>(IpAddr::V4(Ipv4Addr::LOCALHOST), 0);
         (
             tokio::spawn(async move {
                 future.await;

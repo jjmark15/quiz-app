@@ -1,7 +1,7 @@
 use std::fmt::Debug;
+use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
 
 pub trait ModelID<'a>: Eq + Deserialize<'a> + Serialize + Clone + Debug + Default {
     fn value(&self) -> uuid::Uuid;
@@ -42,7 +42,7 @@ pub trait QuestionSetInterface<'a>: Debug + Deserialize<'a> + Serialize + Clone 
 
     fn name(&self) -> &String;
 
-    fn with_id<ID: Into<Self::ID>>(id: ID, name: String) -> Self;
+    fn with_id(id: Self::ID, name: String) -> Self;
 
     fn new(name: String) -> Self {
         Self::with_id(Self::ID::random(), name)
@@ -66,10 +66,7 @@ impl QuestionSetInterface<'_> for QuestionSetImpl {
         &self.name
     }
 
-    fn with_id<ID: Into<ModelIDImpl>>(id: ID, name: String) -> Self {
-        QuestionSetImpl {
-            id: id.into(),
-            name,
-        }
+    fn with_id(id: ModelIDImpl, name: String) -> Self {
+        QuestionSetImpl { id, name }
     }
 }
