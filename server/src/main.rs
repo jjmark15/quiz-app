@@ -1,6 +1,6 @@
 extern crate pretty_env_logger;
 
-use quiz_domain::services::quiz::QuizServiceImpl;
+use quiz_domain::services::QuizServiceImpl;
 use server::App;
 
 #[tokio::main]

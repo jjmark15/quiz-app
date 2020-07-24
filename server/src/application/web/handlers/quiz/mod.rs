@@ -1,4 +1,4 @@
-use quiz_domain::services::quiz::QuizServiceInterface;
+use quiz_domain::services::QuizServiceInterface;
 
 use crate::application::web::handlers::quiz::reply::QuestionSetReply;
 

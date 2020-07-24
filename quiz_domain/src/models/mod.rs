@@ -1,1 +1,3 @@
-pub mod quiz;
+pub use question::*;
+
+mod question;

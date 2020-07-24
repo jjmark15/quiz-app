@@ -2,7 +2,7 @@ use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use warp::Future;
 
-use quiz_domain::services::quiz::QuizServiceInterface;
+use quiz_domain::services::QuizServiceInterface;
 
 use crate::application::config::env::EnvReaderImpl;
 use crate::application::config::ApplicationConfig;
