@@ -10,7 +10,7 @@ pub(crate) mod validate;
 pub(crate) fn api_filters<'a, QuizService>(
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone + 'a
 where
-    QuizService: 'a + QuizServiceInterface<'a>,
+    QuizService: 'a + QuizServiceInterface,
 {
     warp::path("api")
         .and(

@@ -21,7 +21,7 @@ impl App {
     pub fn new<'a, QuizService>() -> (Self, impl Future<Output = ()> + 'a)
     where
         'a: 'static,
-        QuizService: 'a + QuizServiceInterface<'a>,
+        QuizService: 'a + QuizServiceInterface,
     {
         let mut config = ApplicationConfig::from_env(&EnvReaderImpl);
         let port: u16 = config.web_mut().port();
@@ -34,9 +34,9 @@ impl App {
     ) -> (Self, impl Future<Output = ()> + 'a)
     where
         'a: 'static,
-        QuizService: 'a + QuizServiceInterface<'a>,
+        QuizService: 'a + QuizServiceInterface,
     {
-        let intended_socket_address = socket_address_from_ip_and_port(ip_address, port);
+        let intended_socket_address = SocketAddr::new(ip_address, port);
         let (socket_address, future) = warp::serve(routes::routes::<'a, QuizService>())
             .bind_ephemeral(intended_socket_address);
         (App { socket_address }, future)
@@ -45,8 +45,4 @@ impl App {
     pub fn socket_address(&self) -> SocketAddr {
         self.socket_address
     }
-}
-
-fn socket_address_from_ip_and_port(ip_address: IpAddr, port: u16) -> SocketAddr {
-    SocketAddr::new(ip_address, port)
 }

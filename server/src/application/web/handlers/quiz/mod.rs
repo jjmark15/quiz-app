@@ -7,7 +7,7 @@ mod reply;
 pub(crate) async fn example_question_set<'a, QuizService>(
 ) -> Result<QuestionSetReply, warp::reject::Rejection>
 where
-    QuizService: 'a + QuizServiceInterface<'a>,
+    QuizService: 'a + QuizServiceInterface,
 {
     Ok(QuizService::get_example_question_set().into())
 }

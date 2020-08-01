@@ -1,8 +1,8 @@
-use crate::models::{ModelID, ModelIDImpl, QuestionSetImpl, QuestionSetInterface};
+use crate::entities::{ModelID, ModelIDWithUUID, QuestionSetImpl, QuestionSetInterface};
 
-pub trait QuizServiceInterface<'a> {
-    type QuestionSetID: ModelID<'a>;
-    type QuestionSet: QuestionSetInterface<'a, ID = Self::QuestionSetID>;
+pub trait QuizServiceInterface {
+    type QuestionSetID: ModelID;
+    type QuestionSet: QuestionSetInterface<ID = Self::QuestionSetID>;
 
     fn get_example_question_set() -> Self::QuestionSet {
         Self::QuestionSet::with_id(
@@ -14,7 +14,7 @@ pub trait QuizServiceInterface<'a> {
 
 pub struct QuizServiceImpl;
 
-impl QuizServiceInterface<'_> for QuizServiceImpl {
-    type QuestionSetID = ModelIDImpl;
+impl QuizServiceInterface for QuizServiceImpl {
+    type QuestionSetID = ModelIDWithUUID;
     type QuestionSet = QuestionSetImpl;
 }
