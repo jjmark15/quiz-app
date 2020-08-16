@@ -16,7 +16,7 @@ struct ErrorResponse {
 
 #[tokio::test]
 async fn accepts_accept_header_with_valid_api_version() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(state.server_http_address(), Endpoint::HelloWorldGreeting);
 
     state
@@ -39,7 +39,7 @@ async fn accepts_accept_header_with_valid_api_version() {
 
 #[tokio::test]
 async fn refuses_accept_header_with_invalid_api_version() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(state.server_http_address(), Endpoint::HelloWorldGreeting);
 
     state
@@ -70,7 +70,7 @@ async fn refuses_accept_header_with_invalid_api_version() {
 
 #[tokio::test]
 async fn refuses_accept_header_with_incorrect_api_version() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(state.server_http_address(), Endpoint::HelloWorldGreeting);
 
     state
@@ -99,7 +99,7 @@ async fn refuses_accept_header_with_incorrect_api_version() {
 
 #[tokio::test]
 async fn validation_is_skipped_if_accept_header_is_not_present() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(state.server_http_address(), Endpoint::HelloWorldGreeting);
 
     state
@@ -119,7 +119,7 @@ async fn validation_is_skipped_if_accept_header_is_not_present() {
 
 #[tokio::test]
 async fn validation_is_skipped_if_client_accepts_any_content_type() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(state.server_http_address(), Endpoint::HelloWorldGreeting);
 
     state

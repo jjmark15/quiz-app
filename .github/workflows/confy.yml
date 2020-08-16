@@ -1,4 +1,4 @@
-name: Rust
+name: Confy Package Tests
 
 on:
   push:
@@ -16,8 +16,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-confy-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        run: cargo build --tests --verbose
+        run: cargo build --tests --verbose --package confy
       - name: Run tests
-        run: cargo test --verbose
+        run: cargo test --verbose --package confy

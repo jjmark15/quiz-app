@@ -6,7 +6,7 @@ use spectral::prelude::*;
 
 #[tokio::test]
 async fn gives_example_question_set() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(
         state.server_http_address(),
         Endpoint::ExampleQuizQuestionSet,

@@ -6,7 +6,7 @@ use http::StatusCode;
 
 #[tokio::test]
 async fn hello_world() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(state.server_http_address(), Endpoint::HelloWorldGreeting);
 
     state.request_builder().with_url(url).send().await.unwrap();
@@ -26,7 +26,7 @@ async fn hello_world() {
 
 #[tokio::test]
 async fn hello_person() {
-    let mut state: TestState = TestState::default();
+    let mut state: TestState = TestState::new();
     let url: String = get_request_url(
         state.server_http_address(),
         Endpoint::HelloNameGreeting("Joshua".to_string()),
