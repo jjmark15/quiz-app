@@ -1,4 +1,4 @@
-use crate::entities::{ModelID, ModelIDWithUUID, QuestionSetImpl, QuestionSetInterface};
+use crate::{ModelID, ModelIDWithUUID, QuestionSetImpl, QuestionSetInterface};
 
 pub trait QuizServiceInterface {
     type QuestionSetID: ModelID;

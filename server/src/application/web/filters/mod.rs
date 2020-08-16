@@ -1,6 +1,6 @@
 use warp::Filter;
 
-use quiz_domain::services::QuizServiceInterface;
+use quiz_domain::QuizServiceInterface;
 
 pub(crate) mod admin;
 pub(crate) mod greeting;

@@ -1,4 +1,4 @@
-use crate::entities::Answer;
+use crate::Answer;
 
 #[derive(Clone, Debug, Eq, PartialEq, Default)]
 pub struct BasicAnswer {
@@ -21,7 +21,7 @@ impl BasicAnswer {
 mod tests {
     use spectral::prelude::*;
 
-    use crate::entities::Answer;
+    use crate::Answer;
 
     use super::*;
 

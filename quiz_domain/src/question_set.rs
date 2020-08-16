@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use crate::entities::id::{ModelID, ModelIDWithUUID};
+use crate::id::{ModelID, ModelIDWithUUID};
 
 pub trait QuestionSetInterface: Debug + Clone {
     type ID: ModelID;

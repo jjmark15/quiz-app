@@ -2,7 +2,7 @@ use std::net::{IpAddr, Ipv4Addr};
 
 use tokio::task::JoinHandle;
 
-use quiz_domain::services::QuizServiceImpl;
+use quiz_domain::QuizServiceImpl;
 use server::App;
 
 use crate::common::state::web::RequestBuilder;

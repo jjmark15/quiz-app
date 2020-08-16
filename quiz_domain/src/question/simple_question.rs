@@ -1,4 +1,4 @@
-use crate::entities::{Answer, ModelIDWithUUID, Question};
+use crate::{Answer, ModelIDWithUUID, Question};
 
 #[derive(Debug, Clone)]
 pub struct SimpleQuestion<A>
@@ -63,7 +63,7 @@ where
 mod tests {
     use spectral::prelude::*;
 
-    use crate::entities::MockAnswer;
+    use crate::MockAnswer;
 
     use super::*;
 

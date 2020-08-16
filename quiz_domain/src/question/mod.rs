@@ -2,8 +2,8 @@ use std::fmt::Debug;
 
 pub use simple_question::*;
 
-use crate::entities::id::ModelID;
-use crate::entities::Answer;
+use crate::id::ModelID;
+use crate::Answer;
 
 mod simple_question;
 
