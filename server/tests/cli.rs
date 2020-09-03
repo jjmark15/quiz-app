@@ -1,3 +1,4 @@
+use predicates::str::starts_with;
 use std::path::PathBuf;
 
 #[test]
@@ -7,8 +8,7 @@ fn application_uses_config_path_passed_in_cli() {
     config_file_path.set_extension("yml");
 
     let assert = cmd.arg(config_file_path.as_os_str()).assert();
-    assert.code(1).failure().stderr(
-        "ConfigError(MissingConfigFile(Os { code: 2, kind: NotFound, message: \"The \
-        system cannot find the file specified.\" }))\n",
-    );
+    assert.code(1).failure().stderr(starts_with(
+        "ConfigError(MissingConfigFile(Os { code: 2, kind: NotFound, message: ",
+    ));
 }

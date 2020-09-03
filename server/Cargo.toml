@@ -37,3 +37,4 @@ http = "0.2"
 lazy_static = "1"
 quiz_domain_mocks = { path="../quiz_domain_mocks" }
 assert_cmd = "1.0"
+predicates = "1.0"
