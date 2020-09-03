@@ -1,23 +1,20 @@
 extern crate pretty_env_logger;
 
-use std::path::PathBuf;
+use structopt::StructOpt;
 
 use quiz_domain::QuizServiceImpl;
+use server::cli::CliOptions;
 use server::{App, ApplicationConfig, ConfyConfigReader};
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
+    let cli_opts: CliOptions = CliOptions::from_args();
     let config_reader: ConfyConfigReader<ApplicationConfig> = ConfyConfigReader::new();
-    let mut config_file_path: PathBuf = PathBuf::from(".")
-        .join("server")
-        .join("configs")
-        .join("local");
-    config_file_path.set_extension("yml");
 
     match App::new::<QuizServiceImpl, ConfyConfigReader<ApplicationConfig>>(
         config_reader,
-        config_file_path,
+        cli_opts.config_file_path().to_path_buf(),
     ) {
         Ok((_app, future)) => future.await,
         Err(e) => {
