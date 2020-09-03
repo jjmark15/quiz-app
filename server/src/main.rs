@@ -18,7 +18,7 @@ async fn main() {
     ) {
         Ok((_app, future)) => future.await,
         Err(e) => {
-            eprintln!("{:?}", e);
+            eprintln!("{}", e);
             std::process::exit(e.exit_code());
         }
     }

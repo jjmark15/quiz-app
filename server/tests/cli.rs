@@ -9,6 +9,6 @@ fn application_uses_config_path_passed_in_cli() {
 
     let assert = cmd.arg(config_file_path.as_os_str()).assert();
     assert.code(1).failure().stderr(starts_with(
-        "ConfigError(MissingConfigFile(Os { code: 2, kind: NotFound, message: ",
+        "Config error occurred: could not read from config file",
     ));
 }
