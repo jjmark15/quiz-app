@@ -22,7 +22,7 @@ impl TestState {
     }
 
     fn config_path() -> PathBuf {
-        let mut path: PathBuf = PathBuf::from(".").join("configs").join("integration");
+        let mut path: PathBuf = ["configs", "integration"].iter().collect();
         path.set_extension("yml");
         path
     }

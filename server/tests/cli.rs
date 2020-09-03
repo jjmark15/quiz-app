@@ -4,7 +4,7 @@ use std::path::PathBuf;
 #[test]
 fn application_uses_config_path_passed_in_cli() {
     let mut cmd = assert_cmd::Command::cargo_bin("server").unwrap();
-    let mut config_file_path = PathBuf::from(".").join("configs").join("placeholder");
+    let mut config_file_path: PathBuf = ["configs", "placeholder"].iter().collect();
     config_file_path.set_extension("yml");
 
     let assert = cmd.arg(config_file_path.as_os_str()).assert();

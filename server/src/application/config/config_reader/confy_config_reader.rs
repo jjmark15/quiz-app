@@ -58,11 +58,9 @@ mod tests {
     use super::*;
 
     fn config_path(config_name: String) -> PathBuf {
-        let mut path = PathBuf::from(".")
-            .join("test_data")
-            .join("config")
-            .join("config_reader")
-            .join(config_name);
+        let mut path: PathBuf = ["test_data", "config", "config_reader", &config_name]
+            .iter()
+            .collect();
         path.set_extension("yml");
         path
     }
