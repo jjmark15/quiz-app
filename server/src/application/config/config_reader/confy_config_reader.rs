@@ -21,10 +21,10 @@ where
     type Config = C;
 
     fn with_file_path(&self, file_path: PathBuf) -> Result<C, ConfigReaderError> {
-        match confy::load_path(file_path, confy::MissingConfigFileAction::Nothing) {
-            Ok(c) => Ok(c),
-            Err(e) => Err(e.into()),
-        }
+        Ok(confy::load_path(
+            file_path,
+            confy::MissingConfigFileAction::Nothing,
+        )?)
     }
 }
 
@@ -42,8 +42,8 @@ where
 impl From<ConfyError> for ConfigReaderError {
     fn from(confy_error: ConfyError) -> Self {
         match confy_error {
-            confy::ConfyError::GeneralLoadError(e) => ConfigReaderError::MissingConfigFile(e),
-            confy::ConfyError::BadYamlData(_e) => ConfigReaderError::BadConfigData,
+            ConfyError::GeneralLoadError(e) => ConfigReaderError::MissingConfigFile(e),
+            ConfyError::BadYamlData(_e) => ConfigReaderError::BadConfigData,
             _ => panic!("unexpected confy error occurred {:#?}", confy_error),
         }
     }
