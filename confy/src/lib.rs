@@ -74,23 +74,6 @@ use serde::{de::DeserializeOwned, Serialize};
 use utils::*;
 
 mod utils;
-#[cfg(not(any(feature = "toml_conf", feature = "yaml_conf")))]
-compile_error!(
-    "Exactly one config language feature must be enabled to use \
-confy.  Please enable one of either the `toml_conf` or `yaml_conf` \
-features."
-);
-
-#[cfg(all(feature = "toml_conf", feature = "yaml_conf"))]
-compile_error!(
-    "Exactly one config language feature must be enabled to compile \
-confy.  Please disable one of either the `toml_conf` or `yaml_conf` features. \
-NOTE: `toml_conf` is a default feature, so disabling it might mean switching off \
-default features for confy in your Cargo.toml"
-);
-
-#[cfg(all(feature = "toml_conf", not(feature = "yaml_conf")))]
-const EXTENSION: &str = "toml";
 
 #[cfg(feature = "yaml_conf")]
 const EXTENSION: &str = "yml";
@@ -153,11 +136,6 @@ pub fn load_path<T: Serialize + DeserializeOwned + Default>(
                 .get_string()
                 .map_err(ConfyError::ReadConfigurationFileError)?;
 
-            #[cfg(feature = "toml_conf")]
-            {
-                let cfg_data = toml::from_str(&cfg_string);
-                cfg_data.map_err(ConfyError::BadTomlData)
-            }
             #[cfg(feature = "yaml_conf")]
             {
                 let cfg_data = serde_yaml::from_str(&cfg_string);
@@ -186,18 +164,12 @@ pub enum MissingConfigFileAction {
 /// The errors the confy crate can encounter.
 #[derive(Debug)]
 pub enum ConfyError {
-    #[cfg(feature = "toml_conf")]
-    BadTomlData(toml::de::Error),
-
     #[cfg(feature = "yaml_conf")]
     BadYamlData(serde_yaml::Error),
 
     DirectoryCreationFailed(std::io::Error),
     GeneralLoadError(std::io::Error),
     BadConfigDirectoryStr,
-
-    #[cfg(feature = "toml_conf")]
-    SerializeTomlError(toml::ser::Error),
 
     #[cfg(feature = "yaml_conf")]
     SerializeYamlError(serde_yaml::Error),
@@ -210,13 +182,6 @@ pub enum ConfyError {
 impl fmt::Display for ConfyError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            #[cfg(feature = "toml_conf")]
-            ConfyError::BadTomlData(e) => write!(f, "Bad TOML data: {}", e),
-            #[cfg(feature = "toml_conf")]
-            ConfyError::SerializeTomlError(_) => {
-                write!(f, "Failed to serialize configuration data into TOML.")
-            }
-
             #[cfg(feature = "yaml_conf")]
             ConfyError::BadYamlData(e) => write!(f, "Bad YAML data: {}", e),
             #[cfg(feature = "yaml_conf")]
@@ -303,10 +268,6 @@ pub fn store_path<T: Serialize>(path: impl AsRef<Path>, cfg: T) -> Result<(), Co
         .map_err(ConfyError::OpenConfigurationFileError)?;
 
     let s;
-    #[cfg(feature = "toml_conf")]
-    {
-        s = toml::to_string_pretty(&cfg).map_err(ConfyError::SerializeTomlError)?;
-    }
     #[cfg(feature = "yaml_conf")]
     {
         s = serde_yaml::to_string(&cfg).map_err(ConfyError::SerializeYamlError)?;
