@@ -1,9 +1,9 @@
-use crate::ConfigReaderError;
+use crate::ApplicationConfigError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppStartupError {
     #[error("Config error occurred: {0}")]
-    ConfigError(#[from] ConfigReaderError),
+    ConfigError(#[from] ApplicationConfigError),
 }
 
 impl AppStartupError {

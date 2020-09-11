@@ -1,6 +1,14 @@
 use std::net::{IpAddr, Ipv4Addr};
 
-#[derive(Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+use serde::export::TryFrom;
+
+use crate::application::config::environment::{ConfigEnvironmentError, EnvironmentSupportedConfig};
+use crate::application::config::{
+    environment::EnvironmentReadValue,
+    environment::{EnvironmentReader, EnvironmentReaderStd},
+};
+
+#[derive(Debug, Eq, PartialEq)]
 pub struct WebConfig {
     port: u16,
     address: IpAddr,
@@ -25,6 +33,50 @@ impl Default for WebConfig {
     }
 }
 
+#[derive(Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct WebConfigEnvironmentSupported {
+    port: EnvironmentReadValue<u16>,
+    address: IpAddr,
+}
+
+impl WebConfigEnvironmentSupported {
+    #[cfg(test)]
+    pub(crate) fn new(port: EnvironmentReadValue<u16>, address: IpAddr) -> Self {
+        WebConfigEnvironmentSupported { port, address }
+    }
+}
+
+impl Default for WebConfigEnvironmentSupported {
+    fn default() -> Self {
+        WebConfigEnvironmentSupported {
+            port: 3030.into(),
+            address: IpAddr::from(Ipv4Addr::LOCALHOST),
+        }
+    }
+}
+
+impl EnvironmentSupportedConfig for WebConfigEnvironmentSupported {
+    type Target = WebConfig;
+
+    fn build(
+        &self,
+        env_reader: &impl EnvironmentReader,
+    ) -> Result<Self::Target, ConfigEnvironmentError> {
+        Ok(WebConfig {
+            port: self.port.value(env_reader)?,
+            address: self.address,
+        })
+    }
+}
+
+impl TryFrom<WebConfigEnvironmentSupported> for WebConfig {
+    type Error = ConfigEnvironmentError;
+
+    fn try_from(builder: WebConfigEnvironmentSupported) -> Result<Self, Self::Error> {
+        builder.build(&EnvironmentReaderStd::new())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use spectral::prelude::*;
@@ -36,8 +88,16 @@ mod tests {
         WebConfig::default();
     }
 
+    #[test]
+    fn environment_supported_implements_default() {
+        WebConfigEnvironmentSupported::default();
+    }
+
     fn web_config() -> WebConfig {
-        WebConfig::default()
+        WebConfig {
+            port: 3030,
+            address: IpAddr::from(Ipv4Addr::LOCALHOST),
+        }
     }
 
     #[test]
@@ -52,5 +112,33 @@ mod tests {
         asserting("returns address field")
             .that(&web_config().address())
             .is_equal_to(IpAddr::from(Ipv4Addr::LOCALHOST));
+    }
+
+    #[test]
+    fn environment_supported_config_deserializes_successfully_from_yaml_where_fields_are_default_values(
+    ) {
+        let serialized = "port: 3030\naddress: 127.0.0.1";
+        let result: serde_yaml::Result<WebConfigEnvironmentSupported> =
+            serde_yaml::from_str(serialized);
+        let expected: WebConfigEnvironmentSupported = WebConfigEnvironmentSupported {
+            port: 3030.into(),
+            address: IpAddr::from(Ipv4Addr::LOCALHOST),
+        };
+
+        assert_that(&result.unwrap()).is_equal_to(&expected);
+    }
+
+    #[test]
+    fn environment_supported_config_deserializes_successfully_from_yaml_when_port_is_sourced_from_environment_variable(
+    ) {
+        let serialized = "port: ${FAKE_ENV_VAR}\naddress: 127.0.0.1";
+        let result: serde_yaml::Result<WebConfigEnvironmentSupported> =
+            serde_yaml::from_str(serialized);
+        let expected: WebConfigEnvironmentSupported = WebConfigEnvironmentSupported {
+            port: "${FAKE_ENV_VAR}".parse().unwrap(),
+            address: IpAddr::from(Ipv4Addr::LOCALHOST),
+        };
+
+        assert_that(&result.unwrap()).is_equal_to(&expected);
     }
 }

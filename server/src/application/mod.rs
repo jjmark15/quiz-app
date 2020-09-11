@@ -1,12 +1,12 @@
+use std::marker::PhantomData;
 use std::net::SocketAddr;
 use std::path::PathBuf;
 
-use serde::export::PhantomData;
 use warp::Future;
 
 use quiz_domain::QuizServiceInterface;
 
-use crate::application::config::ApplicationConfig;
+use crate::application::config::{ApplicationConfig, ConfigFactory};
 use crate::application::error::AppStartupError;
 use crate::application::web::routes;
 
@@ -22,15 +22,15 @@ pub struct App<QuizService: QuizServiceInterface> {
 }
 
 impl<QuizService: 'static + QuizServiceInterface> App<QuizService> {
-    pub fn run<ConfigReader>(
-        config_reader: ConfigReader,
+    pub fn run<CfgFactory>(
+        config_factory: CfgFactory,
         config_file_path: PathBuf,
     ) -> Result<(Self, impl Future<Output = ()>), AppStartupError>
     where
         QuizService: QuizServiceInterface,
-        ConfigReader: crate::application::config::ConfigReader<Config = ApplicationConfig>,
+        CfgFactory: ConfigFactory<Config = ApplicationConfig>,
     {
-        let config: ApplicationConfig = config_reader.with_file_path(config_file_path)?;
+        let config: ApplicationConfig = config_factory.load(config_file_path)?;
         let intended_socket_address: SocketAddr =
             SocketAddr::new(config.web().address(), config.web().port());
         let server = warp::serve(routes::routes::<'static, QuizService>());
@@ -57,27 +57,28 @@ mod tests {
 
     use quiz_domain_mocks::MockQuizService;
 
-    use crate::application::config::ConfigReaderError;
-    use crate::MockConfigReader;
+    use crate::application::config::ConfigFileReaderError;
+    use crate::application::config::MockConfigFactory;
+    use crate::ApplicationConfigError;
 
     use super::*;
 
-    fn fake_config_path() -> PathBuf {
-        PathBuf::from("fake")
-    }
-
     #[test]
     fn fails_to_start_app_if_config_reader_error() {
-        let mut config_reader = MockConfigReader::default();
-        config_reader
-            .expect_with_file_path()
-            .with(eq(fake_config_path()))
-            .times(1)
-            .returning(|_f| Err(ConfigReaderError::BadConfigData));
+        let config_path = PathBuf::from("fake");
+        let mut mock_config_factory = MockConfigFactory::default();
+        mock_config_factory
+            .expect_load()
+            .with(eq(config_path.clone()))
+            .returning(|_| {
+                Err(ApplicationConfigError::ConfigReaderError(
+                    ConfigFileReaderError::BadConfigData,
+                ))
+            });
 
-        let result = App::<MockQuizService>::run::<MockConfigReader<ApplicationConfig>>(
-            config_reader,
-            fake_config_path(),
+        let result = App::<MockQuizService>::run::<MockConfigFactory<ApplicationConfig>>(
+            mock_config_factory,
+            config_path,
         );
 
         match result

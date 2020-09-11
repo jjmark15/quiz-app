@@ -8,6 +8,6 @@ fn application_uses_config_path_passed_in_cli() {
 
     let assert = cmd.arg(config_file_path.as_os_str()).assert();
     assert.code(1).failure().stderr(starts_with(
-        "Config error occurred: could not read from config file",
+        "Config error occurred: error occurred reading config file: could not read from config file",
     ));
 }

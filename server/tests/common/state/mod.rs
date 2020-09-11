@@ -3,11 +3,27 @@ use std::path::PathBuf;
 use tokio::task::JoinHandle;
 
 use quiz_domain::QuizServiceImpl;
-use server::{App, ApplicationConfig, ConfyConfigReader};
+use server::{
+    App, ApplicationConfig, ConfyConfigFileReader, EnvironmentReaderStd,
+    EnvironmentSupportedConfigTransformerImpl, FileReadEnvSupportedConfigFactory,
+    FromEnvironmentSupportedConfig,
+};
 
 use crate::common::state::web::RequestBuilder;
 
 pub(crate) mod web;
+
+type ApplicationConfigEnvSupported =
+    <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;
+
+type ConfigFactoryAlias = FileReadEnvSupportedConfigFactory<
+    ApplicationConfig,
+    ConfyConfigFileReader<ApplicationConfigEnvSupported>,
+    EnvironmentSupportedConfigTransformerImpl<ApplicationConfig, EnvironmentReaderStd>,
+>;
+
+type EnvironmentSupportedConfigTransformerAlias =
+    EnvironmentSupportedConfigTransformerImpl<ApplicationConfig, EnvironmentReaderStd>;
 
 #[derive(Debug)]
 pub(crate) struct TestState {
@@ -25,14 +41,19 @@ impl TestState {
         ["configs", "integration.yml"].iter().collect()
     }
 
-    fn config_reader() -> ConfyConfigReader<ApplicationConfig> {
-        ConfyConfigReader::new()
+    fn config_factory() -> ConfigFactoryAlias {
+        let config_reader = ConfyConfigFileReader::<ApplicationConfigEnvSupported>::new();
+        let env_reader = EnvironmentReaderStd::new();
+        let env_config_transformer: EnvironmentSupportedConfigTransformerAlias =
+            EnvironmentSupportedConfigTransformerImpl::new(env_reader);
+        FileReadEnvSupportedConfigFactory::new(config_reader, env_config_transformer)
     }
 
     fn spawn_server_process() -> anyhow::Result<(JoinHandle<()>, App<QuizServiceImpl>)> {
-        let (app, future) = server::App::<QuizServiceImpl>::run::<
-            ConfyConfigReader<ApplicationConfig>,
-        >(Self::config_reader(), Self::config_path())?;
+        let (app, future) = server::App::<QuizServiceImpl>::run::<ConfigFactoryAlias>(
+            Self::config_factory(),
+            Self::config_path(),
+        )?;
         Ok((
             tokio::spawn(async move {
                 future.await;

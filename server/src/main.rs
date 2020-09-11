@@ -5,16 +5,31 @@ use structopt::StructOpt;
 
 use quiz_domain::QuizServiceImpl;
 use server::cli::CliOptions;
-use server::{App, ApplicationConfig, ConfyConfigReader};
+use server::{
+    App, ApplicationConfig, ConfyConfigFileReader, EnvironmentReaderStd,
+    EnvironmentSupportedConfigTransformerImpl, FileReadEnvSupportedConfigFactory,
+    FromEnvironmentSupportedConfig,
+};
+
+type ApplicationConfigEnvSupported =
+    <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;
+
+type ConfigFactoryAlias = FileReadEnvSupportedConfigFactory<
+    ApplicationConfig,
+    ConfyConfigFileReader<ApplicationConfigEnvSupported>,
+    EnvironmentSupportedConfigTransformerImpl<ApplicationConfig, EnvironmentReaderStd>,
+>;
+
+type EnvironmentSupportedConfigTransformerAlias =
+    EnvironmentSupportedConfigTransformerImpl<ApplicationConfig, EnvironmentReaderStd>;
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
     let cli_opts: CliOptions = CliOptions::from_args();
-    let config_reader: ConfyConfigReader<ApplicationConfig> = ConfyConfigReader::new();
 
-    match App::<QuizServiceImpl>::run::<ConfyConfigReader<ApplicationConfig>>(
-        config_reader,
+    match App::<QuizServiceImpl>::run::<ConfigFactoryAlias>(
+        config_factory(),
         cli_opts.config_file_path().to_path_buf(),
     ) {
         Ok((app, future)) => {
@@ -26,4 +41,12 @@ async fn main() {
             std::process::exit(e.exit_code());
         }
     }
+}
+
+fn config_factory() -> ConfigFactoryAlias {
+    let config_reader = ConfyConfigFileReader::<ApplicationConfigEnvSupported>::new();
+    let env_reader = EnvironmentReaderStd::new();
+    let env_config_transformer: EnvironmentSupportedConfigTransformerAlias =
+        EnvironmentSupportedConfigTransformerImpl::new(env_reader);
+    FileReadEnvSupportedConfigFactory::new(config_reader, env_config_transformer)
 }
