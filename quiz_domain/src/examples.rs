@@ -12,6 +12,7 @@ pub trait QuizServiceInterface {
     }
 }
 
+#[derive(Debug)]
 pub struct QuizServiceImpl;
 
 impl QuizServiceInterface for QuizServiceImpl {

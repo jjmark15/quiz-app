@@ -1,6 +1,7 @@
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
 use std::path::PathBuf;
 
+use serde::export::PhantomData;
 use warp::Future;
 
 use quiz_domain::QuizServiceInterface;
@@ -14,39 +15,35 @@ mod error;
 mod logging;
 pub(crate) mod web;
 
-#[derive(Debug, Clone)]
-pub struct App {
+#[derive(Debug)]
+pub struct App<QuizService: QuizServiceInterface> {
     socket_address: SocketAddr,
+    quiz_service: PhantomData<QuizService>,
 }
 
-impl App {
-    pub fn new<'a, QuizService, ConfigReader>(
+impl<QuizService: 'static + QuizServiceInterface> App<QuizService> {
+    pub fn run<ConfigReader>(
         config_reader: ConfigReader,
         config_file_path: PathBuf,
-    ) -> Result<(Self, impl Future<Output = ()> + 'a), AppStartupError>
+    ) -> Result<(Self, impl Future<Output = ()>), AppStartupError>
     where
-        'a: 'static,
-        QuizService: 'a + QuizServiceInterface,
+        QuizService: QuizServiceInterface,
         ConfigReader: crate::application::config::ConfigReader<Config = ApplicationConfig>,
     {
         let config: ApplicationConfig = config_reader.with_file_path(config_file_path)?;
-        let port: u16 = config.web().port();
-        let address = config.web().address();
-        Ok(Self::from_ip_and_port::<'a, QuizService>(address, port))
+        let intended_socket_address: SocketAddr =
+            SocketAddr::new(config.web().address(), config.web().port());
+        let server = warp::serve(routes::routes::<'static, QuizService>());
+        let (bound_socket_address, future) = server.bind_ephemeral(intended_socket_address);
+
+        Ok((App::new(bound_socket_address), future))
     }
 
-    pub fn from_ip_and_port<'a, QuizService>(
-        ip_address: IpAddr,
-        port: u16,
-    ) -> (Self, impl Future<Output = ()> + 'a)
-    where
-        'a: 'static,
-        QuizService: 'a + QuizServiceInterface,
-    {
-        let intended_socket_address = SocketAddr::new(ip_address, port);
-        let (socket_address, future) = warp::serve(routes::routes::<'a, QuizService>())
-            .bind_ephemeral(intended_socket_address);
-        (App { socket_address }, future)
+    fn new(socket_address: SocketAddr) -> Self {
+        App::<QuizService> {
+            socket_address,
+            quiz_service: PhantomData::default(),
+        }
     }
 
     pub fn socket_address(&self) -> SocketAddr {
@@ -78,7 +75,7 @@ mod tests {
             .times(1)
             .returning(|_f| Err(ConfigReaderError::BadConfigData));
 
-        let result = App::new::<MockQuizService, MockConfigReader<ApplicationConfig>>(
+        let result = App::<MockQuizService>::run::<MockConfigReader<ApplicationConfig>>(
             config_reader,
             fake_config_path(),
         );

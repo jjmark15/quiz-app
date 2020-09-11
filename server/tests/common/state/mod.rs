@@ -13,7 +13,7 @@ pub(crate) mod web;
 pub(crate) struct TestState {
     request_builder: RequestBuilder,
     server_proc_handle: JoinHandle<()>,
-    server_app: App,
+    server_app: App<QuizServiceImpl>,
 }
 
 impl TestState {
@@ -22,18 +22,15 @@ impl TestState {
     }
 
     fn config_path() -> PathBuf {
-        let mut path: PathBuf = ["configs", "integration"].iter().collect();
-        path.set_extension("yml");
-        path
+        ["configs", "integration.yml"].iter().collect()
     }
 
     fn config_reader() -> ConfyConfigReader<ApplicationConfig> {
         ConfyConfigReader::new()
     }
 
-    fn spawn_server_process() -> anyhow::Result<(JoinHandle<()>, App)> {
-        let (app, future) = server::App::new::<
-            QuizServiceImpl,
+    fn spawn_server_process() -> anyhow::Result<(JoinHandle<()>, App<QuizServiceImpl>)> {
+        let (app, future) = server::App::<QuizServiceImpl>::run::<
             ConfyConfigReader<ApplicationConfig>,
         >(Self::config_reader(), Self::config_path())?;
         Ok((
