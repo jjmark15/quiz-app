@@ -1,11 +1,8 @@
 use std::net::{IpAddr, Ipv4Addr};
 
-use serde::export::TryFrom;
-
 use crate::application::config::environment::{ConfigEnvironmentError, EnvironmentSupportedConfig};
 use crate::application::config::{
-    environment::EnvironmentReadValue,
-    environment::{EnvironmentReader, EnvironmentReaderStd},
+    environment::EnvironmentReadValue, environment::EnvironmentReader,
 };
 
 #[derive(Debug, Eq, PartialEq)]
@@ -66,14 +63,6 @@ impl EnvironmentSupportedConfig for WebConfigEnvironmentSupported {
             port: self.port.value(env_reader)?,
             address: self.address,
         })
-    }
-}
-
-impl TryFrom<WebConfigEnvironmentSupported> for WebConfig {
-    type Error = ConfigEnvironmentError;
-
-    fn try_from(builder: WebConfigEnvironmentSupported) -> Result<Self, Self::Error> {
-        builder.build(&EnvironmentReaderStd::new())
     }
 }
 
