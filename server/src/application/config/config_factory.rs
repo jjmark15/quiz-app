@@ -95,7 +95,7 @@ mod tests {
         MockEnvironmentSupportedConfigTransformer<TestConfig>,
     >;
 
-    #[derive(Debug, Eq, PartialEq, Clone)]
+    #[derive(Debug, Eq, PartialEq)]
     struct TestConfig {
         plain_field: String,
         env_modified_field: String,
@@ -110,7 +110,7 @@ mod tests {
         }
     }
 
-    #[derive(Debug, Eq, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
+    #[derive(Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
     struct TestConfigEnvironmentSupported {
         plain_field: String,
         env_modified_field: String,
@@ -138,13 +138,6 @@ mod tests {
 
     impl FromEnvironmentSupportedConfig for TestConfig {
         type EnvSupportedConfig = TestConfigEnvironmentSupported;
-
-        fn try_from(
-            _environment_supported_config: Self::EnvSupportedConfig,
-            _env_reader: &impl EnvironmentReader,
-        ) -> Result<Self, ConfigEnvironmentError> {
-            unimplemented!()
-        }
     }
 
     #[test]
