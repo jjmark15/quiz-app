@@ -11,4 +11,4 @@ uuid = { version = "0.8", features = ["serde", "v4"] }
 
 [dev-dependencies]
 spectral = "^0.6.0"
-mockall = "^0.7.2"
+mockall = "^0.8.1"
