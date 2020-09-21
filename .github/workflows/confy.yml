@@ -3,8 +3,12 @@ name: Confy Package Tests
 on:
   push:
     branches: [main]
+    paths:
+      - 'confy/**'
   pull_request:
     branches: [main]
+      paths:
+        - 'confy/**'
 
 jobs:
   build:
