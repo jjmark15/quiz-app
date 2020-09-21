@@ -7,8 +7,8 @@ on:
       - 'confy/**'
   pull_request:
     branches: [main]
-      paths:
-        - 'confy/**'
+    paths:
+      - 'confy/**'
 
 jobs:
   build:
