@@ -57,9 +57,10 @@ mod tests {
     use mockall::predicate::eq;
 
     use application_config::{ApplicationConfigError, ConfigFileReaderError};
-    use quiz_domain_mocks::MockQuizService;
+    use quiz_domain::{ModelIDWithUUID, QuestionSetImpl};
 
     use crate::application::config::application_config_mocks::MockConfigFactory;
+    use crate::quiz_domain::mocks::MockQuizService;
 
     use super::*;
 
@@ -76,10 +77,9 @@ mod tests {
                 ))
             });
 
-        let result = App::<MockQuizService>::run::<MockConfigFactory<ApplicationConfig>>(
-            mock_config_factory,
-            config_path,
-        );
+        let result = App::<MockQuizService<ModelIDWithUUID, QuestionSetImpl>>::run::<
+            MockConfigFactory<ApplicationConfig>,
+        >(mock_config_factory, config_path);
 
         match result
             .err()

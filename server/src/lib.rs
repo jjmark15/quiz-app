@@ -8,3 +8,4 @@ pub use application::App;
 
 mod application;
 pub mod cli;
+mod quiz_domain;
