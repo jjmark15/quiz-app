@@ -2,12 +2,12 @@ use std::path::PathBuf;
 
 use tokio::task::JoinHandle;
 
-use quiz_domain::QuizServiceImpl;
-use server::{
-    App, ApplicationConfig, ConfyConfigFileReader, EnvironmentReaderStd,
-    EnvironmentSupportedConfigTransformerImpl, FileReadEnvSupportedConfigFactory,
-    FromEnvironmentSupportedConfig,
+use application_config::{
+    ConfyConfigFileReader, EnvironmentReaderStd, EnvironmentSupportedConfigTransformerImpl,
+    FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
 };
+use quiz_domain::QuizServiceImpl;
+use server::{App, ApplicationConfig};
 
 use crate::common::state::web::RequestBuilder;
 

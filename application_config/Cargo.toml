@@ -1,0 +1,20 @@
+[package]
+name = "application_config"
+version = "0.1.0"
+authors = ["Josh Jones <ohblonddev@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+
+[dependencies.confy]
+path = "../confy"
+features = ["yaml_conf"]
+default-features = false
+
+[dev-dependencies]
+spectral = "^0.6.0"
+mockall = "^0.8.1"
+predicates = "1.0"
+serde_yaml = "^0.8"

@@ -1,4 +1,4 @@
-use crate::application::config::environment::ConfigEnvironmentError;
+use crate::environment::ConfigEnvironmentError;
 use crate::ConfigFileReaderError;
 
 #[derive(Debug, thiserror::Error)]

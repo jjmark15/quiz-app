@@ -4,9 +4,10 @@ use std::path::PathBuf;
 
 use warp::Future;
 
+use application_config::ConfigFactory;
 use quiz_domain::QuizServiceInterface;
 
-use crate::application::config::{ApplicationConfig, ConfigFactory};
+use crate::application::config::ApplicationConfig;
 use crate::application::error::AppStartupError;
 use crate::application::web::routes;
 
@@ -55,11 +56,10 @@ impl<QuizService: 'static + QuizServiceInterface> App<QuizService> {
 mod tests {
     use mockall::predicate::eq;
 
+    use application_config::{ApplicationConfigError, ConfigFileReaderError};
     use quiz_domain_mocks::MockQuizService;
 
-    use crate::application::config::ConfigFileReaderError;
-    use crate::application::config::MockConfigFactory;
-    use crate::ApplicationConfigError;
+    use crate::application::config::application_config_mocks::MockConfigFactory;
 
     use super::*;
 

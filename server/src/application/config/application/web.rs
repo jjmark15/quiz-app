@@ -1,8 +1,7 @@
 use std::net::{IpAddr, Ipv4Addr};
 
-use crate::application::config::environment::{ConfigEnvironmentError, EnvironmentSupportedConfig};
-use crate::application::config::{
-    environment::EnvironmentReadValue, environment::EnvironmentReader,
+use application_config::{
+    ConfigEnvironmentError, EnvironmentReadValue, EnvironmentReader, EnvironmentSupportedConfig,
 };
 
 #[derive(Debug, Eq, PartialEq)]

@@ -3,13 +3,13 @@ extern crate pretty_env_logger;
 use log::info;
 use structopt::StructOpt;
 
+use application_config::{
+    ConfyConfigFileReader, EnvironmentReaderStd, EnvironmentSupportedConfigTransformerImpl,
+    FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
+};
 use quiz_domain::QuizServiceImpl;
 use server::cli::CliOptions;
-use server::{
-    App, ApplicationConfig, ConfyConfigFileReader, EnvironmentReaderStd,
-    EnvironmentSupportedConfigTransformerImpl, FileReadEnvSupportedConfigFactory,
-    FromEnvironmentSupportedConfig,
-};
+use server::{App, ApplicationConfig};
 
 type ApplicationConfigEnvSupported =
     <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;

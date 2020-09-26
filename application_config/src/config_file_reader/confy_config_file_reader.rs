@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use confy::ConfyError;
 
-use crate::{ConfigFileReader, ConfigFileReaderError};
+use super::{ConfigFileReader, ConfigFileReaderError};
 
 #[derive(Default)]
 pub struct ConfyConfigFileReader<C>

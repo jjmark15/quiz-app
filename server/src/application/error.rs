@@ -1,4 +1,4 @@
-use crate::ApplicationConfigError;
+use application_config::ApplicationConfigError;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppStartupError {

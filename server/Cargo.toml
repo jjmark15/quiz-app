@@ -16,15 +16,11 @@ serde = { version = "1.0", features = ["derive"] }
 regex = "1"
 pkg-version = "^1.0"
 getset = "^0.1.0"
-quiz_domain = { path="../quiz_domain" }
+quiz_domain = { path = "../quiz_domain" }
 thiserror = "1.0"
 cfg-if = "0.1"
 structopt = "0.3"
-
-[dependencies.confy]
-path = "../confy"
-features = ["yaml_conf"]
-default-features = false
+application_config = { path = "../application_config" }
 
 [dev-dependencies]
 spectral = "^0.6.0"

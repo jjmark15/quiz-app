@@ -1,6 +1,6 @@
 use std::marker::PhantomData;
 
-use crate::application::config::environment::{ConfigEnvironmentError, EnvironmentReader};
+use crate::environment::{ConfigEnvironmentError, EnvironmentReader};
 
 pub trait EnvironmentSupportedConfig {
     type Target;
@@ -83,7 +83,7 @@ mockall::mock! {
 mod tests {
     use spectral::prelude::*;
 
-    use crate::application::config::environment::MockEnvironmentReader;
+    use crate::environment::MockEnvironmentReader;
 
     use super::*;
 

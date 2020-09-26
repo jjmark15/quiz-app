@@ -2,19 +2,19 @@ use std::str::FromStr;
 
 use serde::export::TryFrom;
 
-use crate::application::config::environment::read_environment::EnvironmentReader;
-use crate::application::config::environment::ConfigEnvironmentError;
+use crate::environment::read_environment::EnvironmentReader;
+use crate::environment::ConfigEnvironmentError;
 
 #[derive(Debug, Eq, PartialEq, Default, serde::Deserialize, serde::Serialize)]
 #[serde(try_from = "MidDeserializationStepContainer")]
-pub(crate) struct EnvironmentReadValue<T: FromStr + Copy> {
+pub struct EnvironmentReadValue<T: FromStr + Copy> {
     #[serde(skip)]
     environment_variable_key: String,
     initialised_value: Option<T>,
 }
 
 impl<T: FromStr + Copy> EnvironmentReadValue<T> {
-    pub(crate) fn value<EnvReader: EnvironmentReader>(
+    pub fn value<EnvReader: EnvironmentReader>(
         &self,
         environment_reader: &EnvReader,
     ) -> Result<T, ConfigEnvironmentError> {
@@ -111,7 +111,7 @@ mod tests {
     use mockall::predicate::eq;
     use spectral::prelude::*;
 
-    use crate::application::config::environment::{
+    use crate::environment::{
         ConfigEnvironmentError, EnvironmentReaderError, MockEnvironmentReader,
     };
 

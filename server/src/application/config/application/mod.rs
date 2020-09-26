@@ -1,10 +1,9 @@
-pub use web::*;
-
-use crate::application::config::application::web::WebConfig;
-use crate::application::config::environment::{
+use application_config::{
     ConfigEnvironmentError, EnvironmentReader, EnvironmentSupportedConfig,
+    FromEnvironmentSupportedConfig,
 };
-use crate::FromEnvironmentSupportedConfig;
+use web::WebConfig;
+pub use web::*;
 
 mod web;
 
@@ -65,7 +64,9 @@ mod tests {
     use predicates::ord::eq;
     use spectral::prelude::*;
 
-    use crate::application::config::environment::{EnvironmentReaderError, MockEnvironmentReader};
+    use application_config::EnvironmentReaderError;
+
+    use crate::application::config::application_config_mocks::MockEnvironmentReader;
 
     use super::*;
 

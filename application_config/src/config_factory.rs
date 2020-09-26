@@ -1,9 +1,7 @@
 use std::marker::PhantomData;
 use std::path::PathBuf;
 
-use crate::application::config::environment::{
-    EnvironmentSupportedConfigTransformer, FromEnvironmentSupportedConfig,
-};
+use crate::environment::{EnvironmentSupportedConfigTransformer, FromEnvironmentSupportedConfig};
 use crate::{ApplicationConfigError, ConfigFileReader};
 
 pub trait ConfigFactory {
@@ -64,25 +62,12 @@ where
 }
 
 #[cfg(test)]
-mockall::mock! {
-    pub ConfigFactory<Cfg: 'static> {}
-
-    trait ConfigFactory {
-        type Config = Cfg;
-
-        fn load(&self, file_path: PathBuf) -> Result<Cfg, ApplicationConfigError>;
-    }
-}
-
-#[cfg(test)]
 mod tests {
     use predicates::ord::eq;
     use spectral::prelude::*;
 
-    use crate::application::config::config_file_reader::{
-        ConfigFileReaderError, MockConfigFileReader,
-    };
-    use crate::application::config::environment::{
+    use crate::config_file_reader::{ConfigFileReaderError, MockConfigFileReader};
+    use crate::environment::{
         ConfigEnvironmentError, EnvironmentReader, EnvironmentSupportedConfig,
         EnvironmentVariableConfigValueError, MockEnvironmentSupportedConfigTransformer,
     };

@@ -1,6 +1,4 @@
-use crate::application::config::environment::{
-    EnvironmentReaderError, EnvironmentVariableConfigValueError,
-};
+use crate::environment::{EnvironmentReaderError, EnvironmentVariableConfigValueError};
 
 #[derive(Debug, thiserror::Error)]
 pub enum ConfigEnvironmentError {
