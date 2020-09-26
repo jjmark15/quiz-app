@@ -18,3 +18,4 @@ spectral = "^0.6.0"
 mockall = "^0.8.1"
 predicates = "1.0"
 serde_yaml = "^0.8"
+serde = { version = "1.0", features = ["derive"] }
