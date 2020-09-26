@@ -1,7 +1,8 @@
 # warp-server
 
-![Server Application Tests](https://github.com/jjmark15/warp-server/workflows/Server%20Application%20Tests/badge.svg?branch=main)
-![Confy Package Tests](https://github.com/jjmark15/warp-server/workflows/Confy%20Package%20Tests/badge.svg?branch=main)
+![Server Application Tests](https://github.com/jjmark15/warp-server/workflows/Server%20Application%20Tests/badge.svg)
+
+![Application Config Crate](https://github.com/jjmark15/warp-server/workflows/Application%20Config%20Crate/badge.svg)
 
 ## Project Aims
 
