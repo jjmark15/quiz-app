@@ -8,7 +8,7 @@ use application_config::{
     FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
 };
 use quiz_domain::ExampleQuizObjectsServiceImpl;
-use server_backend::{App, ApplicationConfig, ApplicationServiceImpl};
+use server_backend::{Server, ApplicationConfig, ApplicationServiceImpl};
 
 use crate::common::state::web::RequestBuilder;
 
@@ -30,7 +30,7 @@ type EnvironmentSupportedConfigTransformerAlias =
 pub(crate) struct TestState {
     request_builder: RequestBuilder,
     server_proc_handle: JoinHandle<()>,
-    server_app: App<ConfigFactoryAlias, ApplicationServiceImpl>,
+    server_app: Server<ConfigFactoryAlias, ApplicationServiceImpl>,
 }
 
 impl TestState {
@@ -58,10 +58,10 @@ impl TestState {
 
     fn spawn_server_process() -> anyhow::Result<(
         JoinHandle<()>,
-        App<ConfigFactoryAlias, ApplicationServiceImpl>,
+        Server<ConfigFactoryAlias, ApplicationServiceImpl>,
     )> {
         let mut server_app =
-            server_backend::App::new(Self::config_factory(), Self::application_service());
+            server_backend::Server::new(Self::config_factory(), Self::application_service());
         let future = server_app.run(Self::config_path())?;
         Ok((
             tokio::spawn(async move {

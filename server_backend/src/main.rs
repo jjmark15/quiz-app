@@ -11,7 +11,7 @@ use application_config::{
 };
 use quiz_domain::ExampleQuizObjectsServiceImpl;
 use server_backend::cli::CliOptions;
-use server_backend::{App, ApplicationConfig, ApplicationServiceImpl};
+use server_backend::{Server, ApplicationConfig, ApplicationServiceImpl};
 
 type ApplicationConfigEnvSupported =
     <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;
@@ -29,7 +29,7 @@ type EnvironmentSupportedConfigTransformerAlias =
 async fn main() {
     pretty_env_logger::init();
     let cli_opts: CliOptions = CliOptions::from_args();
-    let mut server = App::new(config_factory(), application_service());
+    let mut server = Server::new(config_factory(), application_service());
 
     match server.run(cli_opts.config_file_path().to_path_buf()) {
         Ok(future) => {
