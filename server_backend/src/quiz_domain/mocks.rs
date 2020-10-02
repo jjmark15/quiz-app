@@ -1,17 +1,17 @@
 use mockall::mock;
 
-use quiz_domain::{ExampleQuizObjectsService, ModelID, QuestionSetInterface};
+use quiz_domain::{ExampleQuizObjectsService, ModelID, QuestionSet};
 
 mock! {
     pub ExampleQuizObjectsService<MID, QS>
     where
         MID: 'static +  ModelID,
-        QS: 'static +  QuestionSetInterface<ID=MID>,
+        QS: 'static +  QuestionSet<ID=MID>,
     {}
 
     trait ExampleQuizObjectsService {
         type QuestionSetID = MID;
-        type QuestionSet = QS;
+        type QuestionSetType = QS;
 
         fn get_example_question_set(&self) -> QS;
     }

@@ -1,11 +1,11 @@
-use crate::{ModelID, ModelIDWithUUID, QuestionSetImpl, QuestionSetInterface};
+use crate::{ModelID, ModelIDWithUUID, QuestionSet, QuestionSetImpl};
 
 pub trait ExampleQuizObjectsService {
     type QuestionSetID: ModelID;
-    type QuestionSet: QuestionSetInterface<ID = Self::QuestionSetID>;
+    type QuestionSetType: QuestionSet<ID = Self::QuestionSetID>;
 
-    fn get_example_question_set(&self) -> Self::QuestionSet {
-        Self::QuestionSet::with_id(
+    fn get_example_question_set(&self) -> Self::QuestionSetType {
+        Self::QuestionSetType::with_id(
             Self::QuestionSetID::default(),
             "Example question set title".to_string(),
         )
@@ -17,7 +17,7 @@ pub struct ExampleQuizObjectsServiceImpl;
 
 impl ExampleQuizObjectsService for ExampleQuizObjectsServiceImpl {
     type QuestionSetID = ModelIDWithUUID;
-    type QuestionSet = QuestionSetImpl;
+    type QuestionSetType = QuestionSetImpl;
 }
 
 impl ExampleQuizObjectsServiceImpl {

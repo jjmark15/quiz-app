@@ -1,14 +1,14 @@
 use regex::Regex;
 use thiserror::Error;
 
-use crate::application::web::version::{ApiVersionTrait, ParseApiVersionError};
+use crate::application::web::version::{ApiVersion, ParseApiVersionError};
 
 #[derive(Debug, Clone)]
-pub(crate) struct AcceptHeader<A: ApiVersionTrait> {
+pub(crate) struct AcceptHeader<A: ApiVersion> {
     api_version: A,
 }
 
-impl<A: ApiVersionTrait> AcceptHeader<A> {
+impl<A: ApiVersion> AcceptHeader<A> {
     fn new(api_version: A) -> Self {
         AcceptHeader { api_version }
     }
@@ -23,7 +23,7 @@ impl<A: ApiVersionTrait> AcceptHeader<A> {
     }
 }
 
-fn extract_api_version_from_accept_header<T: AsRef<str>, A: ApiVersionTrait>(
+fn extract_api_version_from_accept_header<T: AsRef<str>, A: ApiVersion>(
     accept_header: T,
 ) -> Result<A, ParseAcceptHeaderError> {
     let re: Regex = Regex::new(r"(?i)application/vnd\.warpj\.(v\d*)\+?\w*").unwrap();

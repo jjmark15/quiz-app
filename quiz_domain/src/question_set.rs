@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use crate::id::{ModelID, ModelIDWithUUID};
 
-pub trait QuestionSetInterface: Debug + Clone {
+pub trait QuestionSet: Debug + Clone {
     type ID: ModelID;
 
     fn id(&self) -> Self::ID;
@@ -22,7 +22,7 @@ pub struct QuestionSetImpl {
     name: String,
 }
 
-impl QuestionSetInterface for QuestionSetImpl {
+impl QuestionSet for QuestionSetImpl {
     type ID = ModelIDWithUUID;
 
     fn id(&self) -> Self::ID {

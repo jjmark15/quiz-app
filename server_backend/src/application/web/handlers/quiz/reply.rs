@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use warp::reply::Response;
 
-use quiz_domain::{ModelID, QuestionSetInterface};
+use quiz_domain::{ModelID, QuestionSet};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct QuestionSetResponse {
@@ -9,11 +9,11 @@ pub(crate) struct QuestionSetResponse {
     name: String,
 }
 
-impl<'a, QuestionSet> From<QuestionSet> for QuestionSetResponse
+impl<'a, QS> From<QS> for QuestionSetResponse
 where
-    QuestionSet: QuestionSetInterface,
+    QS: QuestionSet,
 {
-    fn from(q: QuestionSet) -> Self {
+    fn from(q: QS) -> Self {
         QuestionSetResponse {
             id: q.id().value().to_string(),
             name: q.name().clone(),

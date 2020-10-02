@@ -5,7 +5,7 @@ pub trait ApplicationService {
 
     fn get_example_question_set(
         &self,
-    ) -> <Self::ExampleQuizObjectsServiceType as ExampleQuizObjectsService>::QuestionSet;
+    ) -> <Self::ExampleQuizObjectsServiceType as ExampleQuizObjectsService>::QuestionSetType;
 }
 
 #[derive(Debug)]
@@ -26,7 +26,7 @@ impl ApplicationService for ApplicationServiceImpl {
 
     fn get_example_question_set(
         &self,
-    ) -> <Self::ExampleQuizObjectsServiceType as ExampleQuizObjectsService>::QuestionSet {
+    ) -> <Self::ExampleQuizObjectsServiceType as ExampleQuizObjectsService>::QuestionSetType {
         self.example_quiz_objects_service.get_example_question_set()
     }
 }

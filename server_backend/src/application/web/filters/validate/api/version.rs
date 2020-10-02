@@ -4,7 +4,7 @@ use warp::{Filter, Rejection};
 use crate::application::logging;
 use crate::application::web::accept_header::AcceptHeader;
 use crate::application::web::filters::validate::api::error::ApiValidationError;
-use crate::application::web::version::{ApiVersion, ApiVersionTrait};
+use crate::application::web::version::{ApiVersion, ApiVersionImpl};
 
 pub(crate) fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")
@@ -17,7 +17,7 @@ async fn validate_api_version(optional_accept_string: Option<String>) -> Result<
         debug!("accept header is present");
         match AcceptHeader::parse(accept_string) {
             Ok(accept_header) => {
-                let api_version: &ApiVersion = accept_header.api_version();
+                let api_version: &ApiVersionImpl = accept_header.api_version();
                 if !api_version.is_latest() {
                     return handle_old_api_version(*api_version);
                 }
@@ -31,7 +31,7 @@ async fn validate_api_version(optional_accept_string: Option<String>) -> Result<
     }
 }
 
-fn handle_old_api_version(version: ApiVersion) -> Result<(), Rejection> {
+fn handle_old_api_version(version: ApiVersionImpl) -> Result<(), Rejection> {
     let err: ApiValidationError = ApiValidationError::WrongApiVersion(version);
     debug!("{}", logging::log_string(&err));
     Err(warp::reject::custom(err))

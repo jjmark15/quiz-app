@@ -6,12 +6,12 @@ use crate::application::logging;
 use crate::application::logging::{LogEntry, LogEntryKVP};
 use crate::application::web::accept_header::ParseAcceptHeaderError;
 use crate::application::web::error::WebErrorResponse;
-use crate::application::web::version::{ApiVersion, ApiVersionTrait};
+use crate::application::web::version::{ApiVersion, ApiVersionImpl};
 
 #[derive(Debug, Eq, PartialEq, Error)]
 pub(crate) enum ApiValidationError {
     #[error("api version {} is incorrect", .0.version())]
-    WrongApiVersion(ApiVersion),
+    WrongApiVersion(ApiVersionImpl),
     #[error(transparent)]
     InvalidAcceptHeader(#[from] ParseAcceptHeaderError),
 }
