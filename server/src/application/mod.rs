@@ -1,54 +1,65 @@
-use std::marker::PhantomData;
 use std::net::SocketAddr;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use warp::Future;
 
 use application_config::ConfigFactory;
-use quiz_domain::QuizServiceInterface;
+pub use application_service::*;
 
 use crate::application::config::ApplicationConfig;
 use crate::application::error::AppStartupError;
 use crate::application::web::routes;
 
+mod application_service;
 pub(crate) mod config;
 mod error;
 mod logging;
 pub(crate) mod web;
 
 #[derive(Debug)]
-pub struct App<QuizService: QuizServiceInterface> {
-    socket_address: SocketAddr,
-    quiz_service: PhantomData<QuizService>,
+pub struct App<CfgFactory, AS>
+where
+    CfgFactory: ConfigFactory<Config = ApplicationConfig>,
+    AS: ApplicationService + Send + Sync,
+{
+    bound_socket_address: Option<SocketAddr>,
+    config_factory: CfgFactory,
+    application_service: Arc<AS>,
 }
 
-impl<QuizService: 'static + QuizServiceInterface> App<QuizService> {
-    pub fn run<CfgFactory>(
-        config_factory: CfgFactory,
+impl<CfgFactory, AS> App<CfgFactory, AS>
+where
+    CfgFactory: ConfigFactory<Config = ApplicationConfig>,
+    AS: 'static + ApplicationService + Send + Sync,
+{
+    pub fn run(
+        &mut self,
         config_file_path: PathBuf,
-    ) -> Result<(Self, impl Future<Output = ()>), AppStartupError>
+    ) -> Result<impl Future<Output = ()>, AppStartupError>
     where
-        QuizService: QuizServiceInterface,
         CfgFactory: ConfigFactory<Config = ApplicationConfig>,
     {
-        let config: ApplicationConfig = config_factory.load(config_file_path)?;
+        let config: ApplicationConfig = self.config_factory.load(config_file_path)?;
         let intended_socket_address: SocketAddr =
             SocketAddr::new(config.web().address(), config.web().port());
-        let server = warp::serve(routes::routes::<'static, QuizService>());
+        let server = warp::serve(routes::routes(self.application_service.clone()));
         let (bound_socket_address, future) = server.bind_ephemeral(intended_socket_address);
+        self.bound_socket_address = Some(bound_socket_address);
 
-        Ok((App::new(bound_socket_address), future))
+        Ok(future)
     }
 
-    fn new(socket_address: SocketAddr) -> Self {
-        App::<QuizService> {
-            socket_address,
-            quiz_service: PhantomData::default(),
+    pub fn new(config_factory: CfgFactory, application_service: Arc<AS>) -> Self {
+        App::<CfgFactory, AS> {
+            bound_socket_address: None,
+            config_factory,
+            application_service,
         }
     }
 
-    pub fn socket_address(&self) -> SocketAddr {
-        self.socket_address
+    pub fn bound_socket_address(&self) -> Option<SocketAddr> {
+        self.bound_socket_address
     }
 }
 
@@ -57,10 +68,9 @@ mod tests {
     use mockall::predicate::eq;
 
     use application_config::{ApplicationConfigError, ConfigFileReaderError};
-    use quiz_domain::{ModelIDWithUUID, QuestionSetImpl};
 
     use crate::application::config::application_config_mocks::MockConfigFactory;
-    use crate::quiz_domain::mocks::MockQuizService;
+    use crate::application::MockApplicationService;
 
     use super::*;
 
@@ -76,10 +86,11 @@ mod tests {
                     ConfigFileReaderError::BadConfigData,
                 ))
             });
+        let application_service: Arc<MockApplicationService> =
+            Arc::new(MockApplicationService::default());
+        let mut app = App::new(mock_config_factory, application_service);
 
-        let result = App::<MockQuizService<ModelIDWithUUID, QuestionSetImpl>>::run::<
-            MockConfigFactory<ApplicationConfig>,
-        >(mock_config_factory, config_path);
+        let result = app.run(config_path);
 
         match result
             .err()

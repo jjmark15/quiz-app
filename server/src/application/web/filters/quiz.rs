@@ -1,25 +1,30 @@
+use std::sync::Arc;
+
 use warp::Filter;
 
-use quiz_domain::QuizServiceInterface;
-
 use crate::application::web::handlers::quiz;
+use crate::application::ApplicationService;
 
-pub(crate) fn quiz_routes<'a, QuizService>(
-) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone + 'a
+pub(crate) fn quiz_routes<AS>(
+    application_service: Arc<AS>,
+) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone
 where
-    QuizService: 'a + QuizServiceInterface,
+    AS: ApplicationService + Send + Sync,
 {
-    warp::path("quiz").and(example_question_set::<QuizService>())
+    warp::path("quiz").and(example_question_set(application_service))
 }
 
-fn example_question_set<'a, QuizService>(
-) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone + 'a
+fn example_question_set<AS>(
+    application_service: Arc<AS>,
+) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone
 where
-    QuizService: 'a + QuizServiceInterface,
+    AS: ApplicationService + Send + Sync,
 {
+    let app_service = warp::any().map(move || application_service.clone());
     warp::get()
         .and(warp::path("question"))
         .and(warp::path("set"))
         .and(warp::path("example"))
-        .and_then(quiz::example_question_set::<QuizService>)
+        .and(app_service)
+        .and_then(quiz::example_question_set)
 }

@@ -1,16 +1,18 @@
-use warp::Filter;
+use std::sync::Arc;
 
-use quiz_domain::QuizServiceInterface;
+use warp::Filter;
 
 use crate::application::web::filters::{admin, api_filters};
 use crate::application::web::rejection::handle_rejection;
+use crate::application::ApplicationService;
 
-pub fn routes<'a, QuizService>(
-) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone + 'a
+pub fn routes<AS>(
+    application_service: Arc<AS>,
+) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone
 where
-    QuizService: 'a + QuizServiceInterface,
+    AS: ApplicationService + Send + Sync,
 {
-    api_filters::<'a, QuizService>()
+    api_filters(application_service)
         .or(admin::admin_filters())
         .recover(handle_rejection)
 }

@@ -10,6 +10,7 @@ pub trait ConfigFactory {
     fn load(&self, file_path: PathBuf) -> Result<Self::Config, ApplicationConfigError>;
 }
 
+#[derive(Debug)]
 pub struct FileReadEnvSupportedConfigFactory<Cfg, FileReader, EnvConfigTransformer>
 where
     Cfg: FromEnvironmentSupportedConfig,

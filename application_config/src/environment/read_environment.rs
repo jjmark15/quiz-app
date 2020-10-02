@@ -7,7 +7,7 @@ pub trait EnvironmentReader {
     fn read(&self, key: &str) -> Result<String, EnvironmentReaderError>;
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct EnvironmentReaderStd;
 
 impl EnvironmentReaderStd {

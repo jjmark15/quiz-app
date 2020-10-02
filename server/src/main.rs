@@ -1,5 +1,7 @@
 extern crate pretty_env_logger;
 
+use std::sync::Arc;
+
 use log::info;
 use structopt::StructOpt;
 
@@ -7,9 +9,9 @@ use application_config::{
     ConfyConfigFileReader, EnvironmentReaderStd, EnvironmentSupportedConfigTransformerImpl,
     FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
 };
-use quiz_domain::QuizServiceImpl;
+use quiz_domain::ExampleQuizObjectsServiceImpl;
 use server::cli::CliOptions;
-use server::{App, ApplicationConfig};
+use server::{App, ApplicationConfig, ApplicationServiceImpl};
 
 type ApplicationConfigEnvSupported =
     <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;
@@ -27,13 +29,14 @@ type EnvironmentSupportedConfigTransformerAlias =
 async fn main() {
     pretty_env_logger::init();
     let cli_opts: CliOptions = CliOptions::from_args();
+    let mut server = App::new(config_factory(), application_service());
 
-    match App::<QuizServiceImpl>::run::<ConfigFactoryAlias>(
-        config_factory(),
-        cli_opts.config_file_path().to_path_buf(),
-    ) {
-        Ok((app, future)) => {
-            info!("listening on http://{}", app.socket_address());
+    match server.run(cli_opts.config_file_path().to_path_buf()) {
+        Ok(future) => {
+            info!(
+                "listening on http://{}",
+                server.bound_socket_address().unwrap()
+            );
             future.await
         }
         Err(e) => {
@@ -49,4 +52,10 @@ fn config_factory() -> ConfigFactoryAlias {
     let env_config_transformer: EnvironmentSupportedConfigTransformerAlias =
         EnvironmentSupportedConfigTransformerImpl::new(env_reader);
     FileReadEnvSupportedConfigFactory::new(config_reader, env_config_transformer)
+}
+
+fn application_service() -> Arc<ApplicationServiceImpl> {
+    Arc::new(ApplicationServiceImpl::new(
+        ExampleQuizObjectsServiceImpl::new(),
+    ))
 }

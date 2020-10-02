@@ -6,10 +6,11 @@ use application_config::{
     ConfyConfigFileReader, EnvironmentReaderStd, EnvironmentSupportedConfigTransformerImpl,
     FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
 };
-use quiz_domain::QuizServiceImpl;
-use server::{App, ApplicationConfig};
+use server::{App, ApplicationConfig, ApplicationServiceImpl};
 
 use crate::common::state::web::RequestBuilder;
+use quiz_domain::ExampleQuizObjectsServiceImpl;
+use std::sync::Arc;
 
 pub(crate) mod web;
 
@@ -29,7 +30,7 @@ type EnvironmentSupportedConfigTransformerAlias =
 pub(crate) struct TestState {
     request_builder: RequestBuilder,
     server_proc_handle: JoinHandle<()>,
-    server_app: App<QuizServiceImpl>,
+    server_app: App<ConfigFactoryAlias, ApplicationServiceImpl>,
 }
 
 impl TestState {
@@ -49,21 +50,31 @@ impl TestState {
         FileReadEnvSupportedConfigFactory::new(config_reader, env_config_transformer)
     }
 
-    fn spawn_server_process() -> anyhow::Result<(JoinHandle<()>, App<QuizServiceImpl>)> {
-        let (app, future) = server::App::<QuizServiceImpl>::run::<ConfigFactoryAlias>(
-            Self::config_factory(),
-            Self::config_path(),
-        )?;
+    fn application_service() -> Arc<ApplicationServiceImpl> {
+        Arc::new(ApplicationServiceImpl::new(
+            ExampleQuizObjectsServiceImpl::new(),
+        ))
+    }
+
+    fn spawn_server_process() -> anyhow::Result<(
+        JoinHandle<()>,
+        App<ConfigFactoryAlias, ApplicationServiceImpl>,
+    )> {
+        let mut server_app = server::App::new(Self::config_factory(), Self::application_service());
+        let future = server_app.run(Self::config_path())?;
         Ok((
             tokio::spawn(async move {
                 future.await;
             }),
-            app,
+            server_app,
         ))
     }
 
     pub(crate) fn server_http_address(&self) -> String {
-        format!("http://{}", self.server_app.socket_address().to_string())
+        format!(
+            "http://{}",
+            self.server_app.bound_socket_address().unwrap().to_string()
+        )
     }
 
     pub(crate) fn new() -> Self {

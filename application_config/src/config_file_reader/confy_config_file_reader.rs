@@ -5,7 +5,7 @@ use confy::ConfyError;
 
 use super::{ConfigFileReader, ConfigFileReaderError};
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct ConfyConfigFileReader<C>
 where
     C: serde::Serialize + serde::de::DeserializeOwned + Default,
