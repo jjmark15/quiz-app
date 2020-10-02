@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use tokio::task::JoinHandle;
 
@@ -6,11 +7,10 @@ use application_config::{
     ConfyConfigFileReader, EnvironmentReaderStd, EnvironmentSupportedConfigTransformerImpl,
     FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
 };
-use server::{App, ApplicationConfig, ApplicationServiceImpl};
+use quiz_domain::ExampleQuizObjectsServiceImpl;
+use server_backend::{App, ApplicationConfig, ApplicationServiceImpl};
 
 use crate::common::state::web::RequestBuilder;
-use quiz_domain::ExampleQuizObjectsServiceImpl;
-use std::sync::Arc;
 
 pub(crate) mod web;
 
@@ -60,7 +60,8 @@ impl TestState {
         JoinHandle<()>,
         App<ConfigFactoryAlias, ApplicationServiceImpl>,
     )> {
-        let mut server_app = server::App::new(Self::config_factory(), Self::application_service());
+        let mut server_app =
+            server_backend::App::new(Self::config_factory(), Self::application_service());
         let future = server_app.run(Self::config_path())?;
         Ok((
             tokio::spawn(async move {
@@ -79,7 +80,7 @@ impl TestState {
 
     pub(crate) fn new() -> Self {
         let (join_handle, server_app) =
-            Self::spawn_server_process().expect("failed to spawn server process");
+            Self::spawn_server_process().expect("failed to spawn server_backend process");
         TestState {
             request_builder: RequestBuilder::default(),
             server_proc_handle: join_handle,

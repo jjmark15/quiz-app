@@ -16,8 +16,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-server-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-server_backend-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        run: cargo build --tests --verbose --package quiz_domain --package server
+        run: cargo build --tests --verbose --package quiz_domain --package server_backend
       - name: Run tests
-        run: cargo test --verbose --package quiz_domain --package server
+        run: cargo test --verbose --package quiz_domain --package server_backend
