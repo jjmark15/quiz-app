@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use warp::Filter;
 
-use crate::application::web::handlers::quiz;
 use crate::application::ApplicationService;
+use crate::ports::http::handlers::quiz;
 
 pub(crate) fn quiz_routes<AS>(
     application_service: Arc<AS>,

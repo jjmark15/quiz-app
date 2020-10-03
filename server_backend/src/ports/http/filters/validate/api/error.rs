@@ -2,11 +2,11 @@ use thiserror::Error;
 use warp::http::StatusCode;
 use warp::reject::Reject;
 
-use crate::application::logging;
-use crate::application::logging::{LogEntry, LogEntryKVP};
-use crate::application::web::accept_header::ParseAcceptHeaderError;
-use crate::application::web::error::WebErrorResponse;
-use crate::application::web::version::{ApiVersion, ApiVersionImpl};
+use crate::ports::http::accept_header::ParseAcceptHeaderError;
+use crate::ports::http::error::WebErrorResponse;
+use crate::ports::http::version::{ApiVersion, ApiVersionImpl};
+use crate::ports::logging;
+use crate::ports::logging::{LogEntry, LogEntryKVP};
 
 #[derive(Debug, Eq, PartialEq, Error)]
 pub(crate) enum ApiValidationError {

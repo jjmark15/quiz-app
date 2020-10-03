@@ -1,7 +1,7 @@
 use warp::Reply;
 
-use crate::application::logging::{LogEntry, LogEntryKVP};
-use crate::application::web::response::{ErrorMessage, ErrorResponse};
+use crate::ports::http::response::{ErrorMessage, ErrorResponse};
+use crate::ports::logging::{LogEntry, LogEntryKVP};
 
 impl LogEntry for ErrorMessage {
     fn log_entry_kvps(&self) -> Vec<LogEntryKVP> {

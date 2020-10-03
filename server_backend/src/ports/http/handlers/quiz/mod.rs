@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use crate::application::web::handlers::quiz::reply::QuestionSetResponse;
 use crate::application::ApplicationService;
+use crate::ports::http::handlers::quiz::reply::QuestionSetResponse;
 
 mod reply;
 

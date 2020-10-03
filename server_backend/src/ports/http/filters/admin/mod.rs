@@ -1,6 +1,6 @@
 use warp::Filter;
 
-use crate::application::web::handlers::admin;
+use crate::ports::http::handlers::admin;
 
 pub(crate) fn admin_filters(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {

@@ -1,10 +1,10 @@
 use log::debug;
 use warp::{Filter, Rejection};
 
-use crate::application::logging;
-use crate::application::web::accept_header::AcceptHeader;
-use crate::application::web::filters::validate::api::error::ApiValidationError;
-use crate::application::web::version::{ApiVersion, ApiVersionImpl};
+use crate::ports::http::accept_header::AcceptHeader;
+use crate::ports::http::filters::validate::api::error::ApiValidationError;
+use crate::ports::http::version::{ApiVersion, ApiVersionImpl};
+use crate::ports::logging;
 
 pub(crate) fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")

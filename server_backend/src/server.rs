@@ -8,8 +8,8 @@ use application_config::ConfigFactory;
 
 use crate::application::config::ApplicationConfig;
 use crate::application::error::AppStartupError;
-use crate::application::web::routes;
 use crate::application::ApplicationService;
+use crate::ports::http::routes;
 
 #[derive(Debug)]
 pub struct Server<CfgFactory, AS>

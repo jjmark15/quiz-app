@@ -64,7 +64,7 @@ pub(crate) fn log_string<T: LogEntry>(entry: &T) -> String {
 }
 
 mod format {
-    use crate::application::logging::LogEntryKVP;
+    use crate::ports::logging::LogEntryKVP;
 
     pub(crate) fn join_entries(entries: Vec<LogEntryKVP>) -> String {
         let entry_strings: Vec<String> =

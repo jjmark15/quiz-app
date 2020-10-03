@@ -1,7 +1,7 @@
 use regex::Regex;
 use thiserror::Error;
 
-use crate::application::web::version::{ApiVersion, ParseApiVersionError};
+use crate::ports::http::version::{ApiVersion, ParseApiVersionError};
 
 #[derive(Debug, Clone)]
 pub(crate) struct AcceptHeader<A: ApiVersion> {
@@ -58,7 +58,7 @@ pub(crate) enum ParseAcceptHeaderError {
 mod tests {
     use spectral::prelude::*;
 
-    use crate::application::web::version::{MockApiVersion, FROM_STR_MUTEX};
+    use crate::ports::http::version::{MockApiVersion, FROM_STR_MUTEX};
 
     use super::*;
 
