@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "Warp Server")]
+#[structopt(name = "Quiz API")]
 pub struct CliOptions {
     #[structopt(name = "CONFIG FILE PATH", parse(from_os_str))]
     config_file_path: PathBuf,
