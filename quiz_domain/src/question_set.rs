@@ -1,15 +1,15 @@
 use std::fmt::Debug;
 
-use crate::id::{ModelID, ModelIDWithUUID};
+use crate::id::{ModelId, ModelIDWithUUID};
 
 pub trait QuestionSet {
-    type ID: ModelID;
+    type QuestionSetId: ModelId;
 
-    fn id(&self) -> Self::ID;
+    fn id(&self) -> Self::QuestionSetId;
 
     fn name(&self) -> &String;
 
-    fn with_id(id: Self::ID, name: String) -> Self;
+    fn with_id(id: Self::QuestionSetId, name: String) -> Self;
 
     fn new(name: String) -> Self;
 }
@@ -21,9 +21,9 @@ pub struct QuestionSetImpl {
 }
 
 impl QuestionSet for QuestionSetImpl {
-    type ID = ModelIDWithUUID;
+    type QuestionSetId = ModelIDWithUUID;
 
-    fn id(&self) -> Self::ID {
+    fn id(&self) -> Self::QuestionSetId {
         self.id.clone()
     }
 
@@ -36,6 +36,6 @@ impl QuestionSet for QuestionSetImpl {
     }
 
     fn new(name: String) -> Self {
-        Self::with_id(Self::ID::random(), name)
+        Self::with_id(Self::QuestionSetId::random(), name)
     }
 }

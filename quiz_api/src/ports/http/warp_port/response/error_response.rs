@@ -1,5 +1,8 @@
+use std::error::Error;
+
 use serde::Serialize;
 use warp::reply::Json;
+use warp::Reply;
 
 pub(crate) struct ErrorResponse(pub(crate) warp::reply::Response);
 
@@ -9,19 +12,32 @@ impl warp::Reply for ErrorResponse {
     }
 }
 
+pub(crate) trait WebErrorResponse: Error {
+    fn http_status_code(&self) -> warp::http::StatusCode;
+
+    fn error_message(&self) -> ErrorResponseBody {
+        ErrorResponseBody::new(format!("{}", self))
+    }
+
+    fn error_response(&self) -> ErrorResponse {
+        ErrorResponse(
+            warp::reply::with_status::<warp::reply::Json>(
+                self.error_message().into(),
+                self.http_status_code(),
+            )
+            .into_response(),
+        )
+    }
+}
+
 #[derive(Serialize)]
-pub(crate) struct ErrorMessage {
-    code: u16,
+pub(crate) struct ErrorResponseBody {
     message: String,
 }
 
-impl ErrorMessage {
-    pub(crate) fn new(code: u16, message: String) -> ErrorMessage {
-        ErrorMessage { code, message }
-    }
-
-    pub(crate) fn code(&self) -> u16 {
-        self.code
+impl ErrorResponseBody {
+    pub(crate) fn new(message: String) -> ErrorResponseBody {
+        ErrorResponseBody { message }
     }
 
     pub(crate) fn message(&self) -> &String {
@@ -29,7 +45,7 @@ impl ErrorMessage {
     }
 }
 
-impl Into<warp::reply::Json> for ErrorMessage {
+impl Into<warp::reply::Json> for ErrorResponseBody {
     fn into(self) -> Json {
         warp::reply::json(&self)
     }

@@ -10,7 +10,6 @@ use crate::common::{
 
 #[derive(Debug, Deserialize)]
 struct ErrorResponse {
-    code: u32,
     message: String,
 }
 

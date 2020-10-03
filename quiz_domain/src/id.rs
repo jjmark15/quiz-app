@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 pub use uuid::Uuid;
 
-pub trait ModelID {
+pub trait ModelId {
     fn value(&self) -> Uuid;
 
     fn new(value: Uuid) -> Self;
@@ -16,7 +16,7 @@ pub struct ModelIDWithUUID {
     id: Uuid,
 }
 
-impl ModelID for ModelIDWithUUID {
+impl ModelId for ModelIDWithUUID {
     fn value(&self) -> Uuid {
         self.id
     }

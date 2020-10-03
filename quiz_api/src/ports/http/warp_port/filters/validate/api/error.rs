@@ -4,7 +4,7 @@ use warp::reject::Reject;
 
 use crate::ports::http::accept_header::ParseAcceptHeaderError;
 use crate::ports::http::version::{ApiVersion, ApiVersionImpl};
-use crate::ports::http::warp_port::error::WebErrorResponse;
+use crate::ports::http::warp_port::response::WebErrorResponse;
 use crate::ports::logging;
 use crate::ports::logging::{LogEntry, LogEntryKVP};
 

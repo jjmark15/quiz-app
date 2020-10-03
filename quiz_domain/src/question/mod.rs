@@ -1,13 +1,13 @@
 pub use simple_question::*;
 
-use crate::id::ModelID;
+use crate::id::ModelId;
 use crate::Answer;
 
 mod simple_question;
 
 pub trait Question {
-    type QuestionID: ModelID;
-    type QuestionSetID: ModelID;
+    type QuestionID: ModelId;
+    type QuestionSetID: ModelId;
     type QuestionAnswer: Answer;
 
     fn id(&self) -> &Self::QuestionID;

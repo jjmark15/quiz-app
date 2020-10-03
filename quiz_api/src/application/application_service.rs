@@ -1,11 +1,11 @@
 use quiz_domain::{ExampleQuizObjectsService, ExampleQuizObjectsServiceImpl};
 
+use crate::application::question_set::QuestionSetDto;
+
 pub trait ApplicationService {
     type ExampleQuizObjectsServiceType: ExampleQuizObjectsService;
 
-    fn get_example_question_set(
-        &self,
-    ) -> <Self::ExampleQuizObjectsServiceType as ExampleQuizObjectsService>::QuestionSetType;
+    fn get_example_question_set(&self) -> QuestionSetDto;
 }
 
 #[derive(Debug)]
@@ -24,10 +24,10 @@ impl ApplicationServiceImpl {
 impl ApplicationService for ApplicationServiceImpl {
     type ExampleQuizObjectsServiceType = ExampleQuizObjectsServiceImpl;
 
-    fn get_example_question_set(
-        &self,
-    ) -> <Self::ExampleQuizObjectsServiceType as ExampleQuizObjectsService>::QuestionSetType {
-        self.example_quiz_objects_service.get_example_question_set()
+    fn get_example_question_set(&self) -> QuestionSetDto {
+        self.example_quiz_objects_service
+            .get_example_question_set()
+            .into()
     }
 }
 
@@ -38,6 +38,6 @@ mockall::mock! {
     trait ApplicationService {
         type ExampleQuizObjectsServiceType = ExampleQuizObjectsServiceImpl;
 
-        fn get_example_question_set(&self) -> quiz_domain::QuestionSetImpl;
+        fn get_example_question_set(&self) -> QuestionSetDto;
     }
 }
