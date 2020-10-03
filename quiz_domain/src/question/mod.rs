@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 pub use simple_question::*;
 
 use crate::id::ModelID;
@@ -7,7 +5,7 @@ use crate::Answer;
 
 mod simple_question;
 
-pub trait Question: Debug + Clone {
+pub trait Question {
     type QuestionID: ModelID;
     type QuestionSetID: ModelID;
     type QuestionAnswer: Answer;

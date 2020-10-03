@@ -2,7 +2,7 @@ use std::fmt::Debug;
 
 use crate::id::{ModelID, ModelIDWithUUID};
 
-pub trait QuestionSet: Debug + Clone {
+pub trait QuestionSet {
     type ID: ModelID;
 
     fn id(&self) -> Self::ID;
@@ -11,9 +11,7 @@ pub trait QuestionSet: Debug + Clone {
 
     fn with_id(id: Self::ID, name: String) -> Self;
 
-    fn new(name: String) -> Self {
-        Self::with_id(Self::ID::random(), name)
-    }
+    fn new(name: String) -> Self;
 }
 
 #[derive(Debug, Clone)]
@@ -35,5 +33,9 @@ impl QuestionSet for QuestionSetImpl {
 
     fn with_id(id: ModelIDWithUUID, name: String) -> Self {
         QuestionSetImpl { id, name }
+    }
+
+    fn new(name: String) -> Self {
+        Self::with_id(Self::ID::random(), name)
     }
 }

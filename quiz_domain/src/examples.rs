@@ -1,7 +1,7 @@
 use crate::{ModelID, ModelIDWithUUID, QuestionSet, QuestionSetImpl};
 
 pub trait ExampleQuizObjectsService {
-    type QuestionSetID: ModelID;
+    type QuestionSetID: ModelID + Default;
     type QuestionSetType: QuestionSet<ID = Self::QuestionSetID>;
 
     fn get_example_question_set(&self) -> Self::QuestionSetType {

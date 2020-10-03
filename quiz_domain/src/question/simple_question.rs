@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use crate::{Answer, ModelIDWithUUID, Question};
 
 #[derive(Debug, Clone)]
@@ -88,6 +90,17 @@ mod tests {
         mock
     }
 
+    #[derive(Debug, Eq, PartialEq, Clone)]
+    struct AnswerImplementingEquals {
+        value: String,
+    }
+
+    impl Answer for AnswerImplementingEquals {
+        fn satisfied_by(&self, answer: &Self) -> bool {
+            self.eq(answer)
+        }
+    }
+
     #[test]
     fn returns_its_id() {
         asserting("returns its id")
@@ -111,11 +124,12 @@ mod tests {
 
     #[test]
     fn returns_its_answer() {
-        let mut answer = default_answer();
-        answer.expect_eq().return_const(true);
+        let answer = AnswerImplementingEquals {
+            value: "value".to_string(),
+        };
         asserting("returns it's answer")
-            .that(&simple_question(answer).answer())
-            .is_equal_to(&default_answer());
+            .that(&simple_question(answer.clone()).answer())
+            .is_equal_to(&answer);
     }
 
     #[test]

@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 pub use uuid::Uuid;
 
-pub trait ModelID: Eq + for<'a> Clone + Debug + Default {
+pub trait ModelID {
     fn value(&self) -> Uuid;
 
     fn new(value: Uuid) -> Self;
