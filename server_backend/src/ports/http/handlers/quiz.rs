@@ -1,9 +1,7 @@
 use std::sync::Arc;
 
 use crate::application::ApplicationService;
-use crate::ports::http::handlers::quiz::reply::QuestionSetResponse;
-
-mod reply;
+use crate::ports::http::response::QuestionSetResponse;
 
 pub(crate) async fn example_question_set(
     application_service: Arc<impl ApplicationService>,

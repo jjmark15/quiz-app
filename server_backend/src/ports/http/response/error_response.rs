@@ -1,3 +1,4 @@
+use serde::Serialize;
 use warp::reply::Json;
 
 pub(crate) struct ErrorResponse(pub(crate) warp::reply::Response);
@@ -8,7 +9,7 @@ impl warp::Reply for ErrorResponse {
     }
 }
 
-#[derive(serde::Serialize)]
+#[derive(Serialize)]
 pub(crate) struct ErrorMessage {
     code: u16,
     message: String,

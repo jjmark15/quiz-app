@@ -12,6 +12,8 @@ mod rejection;
 mod response;
 mod version;
 
+pub(crate) use response::*;
+
 pub fn routes<AS>(
     application_service: Arc<AS>,
 ) -> impl Filter<Extract = (impl warp::Reply,), Error = warp::Rejection> + Clone

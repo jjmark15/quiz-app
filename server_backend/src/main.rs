@@ -49,8 +49,7 @@ async fn main() {
 fn config_factory() -> ConfigFactoryAlias {
     let config_reader = ConfyConfigFileReader::<ApplicationConfigEnvSupported>::new();
     let env_reader = EnvironmentReaderStd::new();
-    let env_config_transformer: EnvironmentSupportedConfigTransformerAlias =
-        EnvironmentSupportedConfigTransformerImpl::new(env_reader);
+    let env_config_transformer = EnvironmentSupportedConfigTransformerAlias::new(env_reader);
     FileReadEnvSupportedConfigFactory::new(config_reader, env_config_transformer)
 }
 
