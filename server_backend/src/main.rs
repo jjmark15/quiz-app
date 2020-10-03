@@ -11,7 +11,7 @@ use application_config::{
 };
 use quiz_domain::ExampleQuizObjectsServiceImpl;
 use server_backend::cli::CliOptions;
-use server_backend::{Server, ApplicationConfig, ApplicationServiceImpl};
+use server_backend::{ApplicationConfig, ApplicationServiceImpl, Server};
 
 type ApplicationConfigEnvSupported =
     <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;

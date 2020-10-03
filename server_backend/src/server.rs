@@ -37,7 +37,7 @@ where
         let config: ApplicationConfig = self.config_factory.load(config_file_path)?;
         let intended_socket_address: SocketAddr =
             SocketAddr::new(config.web().address(), config.web().port());
-        let server = warp::serve(routes::routes(self.application_service.clone()));
+        let server = warp::serve(routes(self.application_service.clone()));
         let (bound_socket_address, future) = server.bind_ephemeral(intended_socket_address);
         self.bound_socket_address = Some(bound_socket_address);
 
