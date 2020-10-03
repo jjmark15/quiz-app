@@ -9,8 +9,8 @@ use application_config::{
     ConfyConfigFileReader, EnvironmentReaderStd, EnvironmentSupportedConfigTransformerImpl,
     FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
 };
+use quiz_api::{ApplicationConfig, ApplicationServiceImpl, CliOptions, Server};
 use quiz_domain::ExampleQuizObjectsServiceImpl;
-use server_backend::{ApplicationConfig, ApplicationServiceImpl, CliOptions, Server};
 
 type ApplicationConfigEnvSupported =
     <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;

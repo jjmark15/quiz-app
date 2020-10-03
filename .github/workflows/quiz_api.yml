@@ -1,4 +1,4 @@
-name: Server Application Tests
+name: Quiz API Server Application Tests
 
 on:
   push:
@@ -16,8 +16,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: target
-          key: ${{ runner.os }}-server_backend-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-quiz_api-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
       - name: Build
-        run: cargo build --tests --verbose --package quiz_domain --package server_backend
+        run: cargo build --tests --verbose --package quiz_domain --package quiz_api
       - name: Run tests
-        run: cargo test --verbose --package quiz_domain --package server_backend
+        run: cargo test --verbose --package quiz_domain --package quiz_api

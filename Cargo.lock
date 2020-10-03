@@ -1282,6 +1282,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1d01941d82fa2ab50be1e79e6714289dd7cde78eba4c074bc5a4374f650dfe0"
 
 [[package]]
+name = "quiz_api"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "application_config",
+ "assert_cmd",
+ "cfg-if",
+ "getset",
+ "http",
+ "lazy_static",
+ "log 0.4.11",
+ "mockall",
+ "pkg-version",
+ "predicates",
+ "pretty_env_logger",
+ "quiz_domain",
+ "regex",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "spectral",
+ "structopt",
+ "thiserror",
+ "tokio",
+ "warp",
+]
+
+[[package]]
 name = "quiz_domain"
 version = "0.1.0"
 dependencies = [
@@ -1669,35 +1698,6 @@ dependencies = [
  "linked-hash-map",
  "serde",
  "yaml-rust",
-]
-
-[[package]]
-name = "server_backend"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "application_config",
- "assert_cmd",
- "cfg-if",
- "getset",
- "http",
- "lazy_static",
- "log 0.4.11",
- "mockall",
- "pkg-version",
- "predicates",
- "pretty_env_logger",
- "quiz_domain",
- "regex",
- "reqwest",
- "serde",
- "serde_json",
- "serde_yaml",
- "spectral",
- "structopt",
- "thiserror",
- "tokio",
- "warp",
 ]
 
 [[package]]
