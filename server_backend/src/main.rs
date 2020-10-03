@@ -10,8 +10,7 @@ use application_config::{
     FileReadEnvSupportedConfigFactory, FromEnvironmentSupportedConfig,
 };
 use quiz_domain::ExampleQuizObjectsServiceImpl;
-use server_backend::cli::CliOptions;
-use server_backend::{ApplicationConfig, ApplicationServiceImpl, Server};
+use server_backend::{ApplicationConfig, ApplicationServiceImpl, CliOptions, Server};
 
 type ApplicationConfigEnvSupported =
     <ApplicationConfig as FromEnvironmentSupportedConfig>::EnvSupportedConfig;
