@@ -1,7 +1,7 @@
 use regex::Regex;
 use thiserror::Error;
 
-use crate::ports::http::version::{ApiVersion, ParseApiVersionError};
+use super::version::{ApiVersion, ParseApiVersionError};
 
 #[derive(Debug, Clone)]
 pub(crate) struct AcceptHeader<A: ApiVersion> {
