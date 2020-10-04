@@ -5,32 +5,28 @@ authors = ["Josh Jones <ohblonddev@gmail.com>"]
 edition = "2018"
 publish = false
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+application_config = { path = "../application_config" }
+cfg-if = "0.1"
+log = "0.4"
+pkg-version = "^1.0"
+pretty_env_logger = "0.4"
+quiz_domain = { path = "../quiz_domain" }
+regex = "1"
+serde = { version = "1.0", features = ["derive"] }
+structopt = "0.3"
+thiserror = "1.0"
 tokio = { version = "0.2", features = ["full"] }
 warp = "^0.2.2"
-log = "0.4"
-pretty_env_logger = "0.4"
-serde = { version = "1.0", features = ["derive"] }
-regex = "1"
-pkg-version = "^1.0"
-getset = "^0.1.0"
-quiz_domain = { path = "../quiz_domain" }
-thiserror = "1.0"
-cfg-if = "0.1"
-structopt = "0.3"
-application_config = { path = "../application_config" }
 
 [dev-dependencies]
-spectral = "^0.6.0"
-pkg-version = "^1.0"
-mockall = "^0.8.1"
-reqwest = { version = "0.10", features = ["json"] }
 anyhow = "1.0"
-serde_json = "1.0"
-serde_yaml = "^0.8"
+assert_cmd = "1.0"
 http = "0.2"
 lazy_static = "1"
-assert_cmd = "1.0"
+mockall = "^0.8.1"
 predicates = "1.0"
+reqwest = { version = "0.10", features = ["json"] }
+serde_json = "1.0"
+serde_yaml = "^0.8"
+spectral = "^0.6.0"

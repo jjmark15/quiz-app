@@ -510,18 +510,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "getset"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24b328c01a4d71d2d8173daa93562a73ab0fe85616876f02500f53d82948c504"
-dependencies = [
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "h2"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1289,7 +1277,6 @@ dependencies = [
  "application_config",
  "assert_cmd",
  "cfg-if",
- "getset",
  "http",
  "lazy_static",
  "log 0.4.11",
