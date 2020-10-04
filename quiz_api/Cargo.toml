@@ -8,6 +8,7 @@ publish = false
 [dependencies]
 application_config = { path = "../application_config" }
 cfg-if = "0.1"
+http = "0.2"
 log = "0.4"
 pkg-version = "^1.0"
 pretty_env_logger = "0.4"
@@ -22,7 +23,6 @@ warp = "^0.2.2"
 [dev-dependencies]
 anyhow = "1.0"
 assert_cmd = "1.0"
-http = "0.2"
 lazy_static = "1"
 mockall = "^0.8.1"
 predicates = "1.0"

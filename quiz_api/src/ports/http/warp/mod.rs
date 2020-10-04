@@ -4,11 +4,10 @@ use warp::Filter;
 
 use crate::application::ApplicationService;
 
-mod error;
 mod filters;
 mod handlers;
 mod rejection;
-pub mod response;
+mod response;
 
 pub fn routes<AS>(
     application_service: Arc<AS>,

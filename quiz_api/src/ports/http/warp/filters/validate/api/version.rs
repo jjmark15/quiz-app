@@ -3,7 +3,7 @@ use warp::{Filter, Rejection};
 
 use crate::ports::http::accept_header::AcceptHeader;
 use crate::ports::http::version::{ApiVersion, ApiVersionImpl};
-use crate::ports::http::warp_port::filters::validate::api::error::ApiValidationError;
+use crate::ports::http::warp::filters::validate::api::error::ApiValidationError;
 use crate::ports::logging;
 
 pub(crate) fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {

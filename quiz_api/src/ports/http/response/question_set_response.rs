@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use warp::reply::Response;
 
 use crate::application::QuestionSetDto;
 
@@ -10,24 +9,18 @@ pub(crate) struct QuestionSetResponse {
 }
 
 impl QuestionSetResponse {
-    pub fn new(id: String, name: String) -> Self {
+    pub(crate) fn new(id: String, name: String) -> Self {
         QuestionSetResponse { id, name }
     }
 
     #[cfg(test)]
-    pub fn id(&self) -> &String {
+    pub(crate) fn id(&self) -> &String {
         &self.id
     }
 
     #[cfg(test)]
-    pub fn name(&self) -> &String {
+    pub(crate) fn name(&self) -> &String {
         &self.name
-    }
-}
-
-impl warp::Reply for QuestionSetResponse {
-    fn into_response(self) -> Response {
-        warp::reply::json(&self).into_response()
     }
 }
 

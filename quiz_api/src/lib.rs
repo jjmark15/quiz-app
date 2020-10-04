@@ -8,6 +8,6 @@ pub use ports::command_line::CliOptions;
 pub use server::Server;
 
 mod application;
-pub(crate) mod ports;
+mod ports;
 mod quiz_domain;
 mod server;

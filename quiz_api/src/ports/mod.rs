@@ -1,3 +1,3 @@
-pub mod command_line;
-pub mod http;
-pub mod logging;
+pub(crate) mod command_line;
+pub(crate) mod http;
+pub(crate) mod logging;
