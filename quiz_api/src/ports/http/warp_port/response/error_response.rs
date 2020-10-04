@@ -15,14 +15,11 @@ impl warp::Reply for ErrorResponse {
 pub(crate) trait WebErrorResponse: Error {
     fn http_status_code(&self) -> warp::http::StatusCode;
 
-    fn error_message(&self) -> ErrorResponseBody {
-        ErrorResponseBody::new(format!("{}", self))
-    }
-
     fn error_response(&self) -> ErrorResponse {
+        let error_response_body = ErrorResponseBody::new(format!("{}", self));
         ErrorResponse(
             warp::reply::with_status::<warp::reply::Json>(
-                self.error_message().into(),
+                error_response_body.into(),
                 self.http_status_code(),
             )
             .into_response(),
