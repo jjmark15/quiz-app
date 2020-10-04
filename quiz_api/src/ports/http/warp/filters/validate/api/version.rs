@@ -4,7 +4,6 @@ use warp::{Filter, Rejection};
 use crate::ports::http::accept_header::AcceptHeader;
 use crate::ports::http::version::{ApiVersion, ApiVersionImpl};
 use crate::ports::http::warp::filters::validate::api::error::ApiValidationError;
-use crate::ports::logging;
 
 pub(crate) fn valid_api_version() -> impl Filter<Extract = (), Error = Rejection> + Copy {
     warp::header::optional::<String>("accept")
@@ -33,11 +32,9 @@ async fn validate_api_version(optional_accept_string: Option<String>) -> Result<
 
 fn handle_old_api_version(version: ApiVersionImpl) -> Result<(), Rejection> {
     let err: ApiValidationError = ApiValidationError::WrongApiVersion(version);
-    debug!("{}", logging::log_string(&err));
     Err(warp::reject::custom(err))
 }
 
 fn handle_failed_api_version_extraction(err: ApiValidationError) -> Result<(), Rejection> {
-    debug!("{}", logging::log_string(&err));
     Err(warp::reject::custom(err))
 }
