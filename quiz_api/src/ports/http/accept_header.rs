@@ -1,14 +1,16 @@
+use std::str::FromStr;
+
 use regex::Regex;
 use thiserror::Error;
 
-use super::version::{ApiVersion, ParseApiVersionError};
+use super::api_version::{ApiVersion, ParseApiVersionError};
 
 #[derive(Debug, Clone)]
 pub(crate) struct AcceptHeader<A: ApiVersion> {
     api_version: A,
 }
 
-impl<A: ApiVersion> AcceptHeader<A> {
+impl<A: ApiVersion + FromStr<Err = ParseApiVersionError>> AcceptHeader<A> {
     fn new(api_version: A) -> Self {
         AcceptHeader { api_version }
     }
@@ -23,9 +25,13 @@ impl<A: ApiVersion> AcceptHeader<A> {
     }
 }
 
-fn extract_api_version_from_accept_header<T: AsRef<str>, A: ApiVersion>(
+fn extract_api_version_from_accept_header<T, A>(
     accept_header: T,
-) -> Result<A, ParseAcceptHeaderError> {
+) -> Result<A, ParseAcceptHeaderError>
+where
+    T: AsRef<str>,
+    A: ApiVersion + FromStr<Err = ParseApiVersionError>,
+{
     let re: Regex = Regex::new(r"(?i)application/vnd\.warpj\.(v\d*)\+?\w*").unwrap();
     let result = re.captures(accept_header.as_ref());
 
@@ -58,7 +64,7 @@ pub(crate) enum ParseAcceptHeaderError {
 mod tests {
     use spectral::prelude::*;
 
-    use crate::ports::http::version::{MockApiVersion, FROM_STR_MUTEX};
+    use crate::ports::http::api_version::{MockApiVersion, FROM_STR_MUTEX};
 
     use super::*;
 

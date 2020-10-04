@@ -2,7 +2,7 @@ use thiserror::Error;
 use warp::reject::Reject;
 
 use crate::ports::http::accept_header::ParseAcceptHeaderError;
-use crate::ports::http::version::{ApiVersion, ApiVersionImpl};
+use crate::ports::http::api_version::{ApiVersion, ApiVersionImpl};
 
 #[derive(Debug, Eq, PartialEq, Error)]
 pub(crate) enum ApiValidationError {

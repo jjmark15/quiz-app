@@ -17,9 +17,7 @@ cfg_if::cfg_if! {
     }
 }
 
-pub(crate) trait ApiVersion:
-    Clone + PartialEq + Eq + FromStr<Err = ParseApiVersionError>
-{
+pub(crate) trait ApiVersion {
     fn latest() -> &'static ApiVersionImpl;
 
     fn version(&self) -> u32;
