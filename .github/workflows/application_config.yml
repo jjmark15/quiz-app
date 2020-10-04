@@ -26,4 +26,4 @@ jobs:
       - name: Build
         run: cargo build --tests --verbose --package confy --package application_config
       - name: Run tests
-        run: cargo test --verbose --package confy --package application_config
+        run: cargo test --quiet --package confy --package application_config

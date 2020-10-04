@@ -20,4 +20,4 @@ jobs:
       - name: Build
         run: cargo build --tests --verbose --package quiz_domain --package quiz_api
       - name: Run tests
-        run: cargo test --verbose --package quiz_domain --package quiz_api
+        run: cargo test --quiet --package quiz_domain --package quiz_api
