@@ -1292,6 +1292,7 @@ dependencies = [
  "serde_yaml",
  "spectral",
  "structopt",
+ "structured_log_bodies",
  "thiserror",
  "tokio",
  "warp",
@@ -1770,6 +1771,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "structured_log_bodies"
+version = "0.1.0"
+dependencies = [
+ "spectral",
 ]
 
 [[package]]

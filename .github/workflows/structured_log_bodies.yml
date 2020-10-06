@@ -1,0 +1,27 @@
+name: Structured Log Bodies Crate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'structured_log_bodies/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'structured_log_bodies/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-slb-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build
+        run: cargo build --tests --verbose --package confy --package structured_log_bodies
+      - name: Run tests
+        run: cargo test --quiet --package confy --package structured_log_bodies

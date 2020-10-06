@@ -2,9 +2,11 @@ use log::debug;
 use warp::http::StatusCode;
 use warp::Rejection;
 
+use structured_log_bodies::simple_log;
+
 use crate::ports::http::response::{ErrorResponseMapper, WebErrorResponse};
 use crate::ports::http::warp::filters::validate::api::error::ApiValidationError;
-use crate::ports::logging::{simple_log, RejectionLogEntity};
+use crate::ports::logging::RejectionLogEntity;
 
 pub(crate) async fn handle_rejection(rej: Rejection) -> Result<impl warp::reply::Reply, Rejection> {
     let error_response_mapper = ErrorResponseMapper::new();

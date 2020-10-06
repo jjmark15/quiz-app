@@ -1,0 +1,10 @@
+[package]
+name = "structured_log_bodies"
+version = "0.1.0"
+authors = ["Josh Jones <ohblonddev@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+
+[dev-dependencies]
+spectral = "^0.6.0"

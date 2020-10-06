@@ -1,4 +1,4 @@
-use crate::ports::logging::log_section::LogSection;
+use crate::LogSection;
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct LogEntry {

@@ -1,4 +1,4 @@
-use crate::ports::logging::log_entity::LogEntity;
+use crate::LogEntity;
 
 pub fn simple_log(log_entity: impl LogEntity) -> String {
     log_entity
@@ -28,10 +28,8 @@ fn quote_string_if_contains_space<S: AsRef<str>>(string: S) -> String {
 mod tests {
     use spectral::prelude::*;
 
-    use crate::ports::logging::log_entry::LogEntry;
-    use crate::ports::logging::log_section::LogSection;
-
     use super::*;
+    use crate::{LogEntry, LogSection};
 
     struct SingleSectionLogEntity {
         key: String,

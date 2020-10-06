@@ -1,2 +1,2 @@
 [workspace]
-members = ["quiz_api", "quiz_domain", "confy", "application_config"]
+members = ["quiz_api", "quiz_domain", "confy", "application_config", "structured_log_bodies"]

@@ -1,5 +1,6 @@
-use crate::ports::logging::{LogEntity, LogEntry, LogSection};
 use std::error::Error;
+
+use structured_log_bodies::{LogEntity, LogEntry, LogSection};
 
 pub(crate) struct RejectionLogEntity {
     message: String,
@@ -26,8 +27,9 @@ impl LogEntity for RejectionLogEntity {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use spectral::prelude::*;
+
+    use super::*;
 
     #[test]
     fn rejection_log_entity_creates_a_rejection_log_with_a_cause() {

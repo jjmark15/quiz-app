@@ -1,11 +1,3 @@
-pub(crate) use log_entities::*;
-pub use log_entity::*;
-pub use log_entry::*;
-pub use log_section::*;
-pub use simple_logging::*;
+pub(crate) use structured_log_bodies::*;
 
-mod log_entities;
-mod log_entity;
-mod log_entry;
-mod log_section;
-mod simple_logging;
+mod structured_log_bodies;
