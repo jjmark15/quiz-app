@@ -4,6 +4,8 @@
 
 ![Application Config Crate](https://github.com/jjmark15/quiz-app/workflows/Application%20Config%20Crate/badge.svg)
 
+![Structured Log Bodies Crate](https://github.com/jjmark15/quiz-app/workflows/Structured%20Log%20Bodies%20Crate/badge.svg)
+
 ## Project Aims
 
 - teach me a Rust web framework ([warp](https://github.com/seanmonstar/warp))
